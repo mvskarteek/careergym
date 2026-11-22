@@ -1,0 +1,1653 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CareerGym</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap">
+<style>
+:root{
+  --bg:#f5f7fa; --surface:#ffffff; --fg:#17202e; --muted:#5b6677; --line:#dde3ec;
+  --accent:#1f5fbf; --accent-soft:#e3ecfa; --target:#17202e;
+  --good:#1f7a4d; --warn:#b26a00; --bad:#b3261e; --good-soft:#e2f3ea; --warn-soft:#fbefd9; --bad-soft:#fbe4e2;
+  --display:"Space Grotesk",system-ui,sans-serif; --body:"Inter",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#10151d; --surface:#18202b; --fg:#e7ecf3; --muted:#9aa6b8; --line:#2a3544;
+  --accent:#6ea2f2; --accent-soft:#1d2d47; --target:#e7ecf3;
+  --good:#5cc38c; --warn:#e3a54a; --bad:#f0796f; --good-soft:#17352a; --warn-soft:#3a2d14; --bad-soft:#3d1c1a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#10151d; --surface:#18202b; --fg:#e7ecf3; --muted:#9aa6b8; --line:#2a3544;
+  --accent:#6ea2f2; --accent-soft:#1d2d47; --target:#e7ecf3;
+  --good:#5cc38c; --warn:#e3a54a; --bad:#f0796f; --good-soft:#17352a; --warn-soft:#3a2d14; --bad-soft:#3d1c1a; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:32px 64px}
+.wrap{max-width:860px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0}
+h1{font-size:2rem;line-height:1.15}
+h2{font-size:1.3rem}
+h3{font-size:1rem}
+p{margin:0}
+.muted{color:var(--muted)}
+.eyebrow{font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.note{font-size:.8rem;color:var(--muted);border:1px dashed var(--line);border-radius:8px;padding:8px 12px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:16px}
+.step{display:flex;gap:10px;align-items:baseline}
+.step b{font-family:var(--display);color:var(--accent)}
+.persona{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:start}
+.avatar{width:56px;height:56px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-family:var(--display);font-weight:700;font-size:1.3rem}
+.facts{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chip{font-size:.78rem;background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:2px 10px}
+.profiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.profile{text-align:left;font:inherit;color:inherit;background:var(--surface);border:1.5px solid var(--line);border-radius:10px;padding:12px;cursor:pointer;display:flex;flex-direction:column;gap:4px}
+.profile:hover{border-color:var(--accent)}
+.profile[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.profile span{font-size:.82rem;color:var(--muted)}
+.q{display:flex;flex-direction:column;gap:6px;padding-top:14px;border-top:1px solid var(--line)}
+.q:first-of-type{border-top:0;padding-top:0}
+.q label{font-weight:600}
+.q .comp{font-size:.75rem;color:var(--accent);font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+textarea{width:100%;min-height:84px;font:inherit;font-size:.92rem;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px;resize:vertical}
+textarea:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.actions{display:flex;flex-wrap:wrap;gap:10px}
+.btn{font:inherit;font-weight:600;border-radius:8px;padding:9px 16px;cursor:pointer;border:1px solid var(--accent);background:var(--accent);color:var(--surface)}
+.btn.ghost{background:transparent;color:var(--accent)}
+.summary{display:flex;flex-wrap:wrap;gap:24px}
+.summary div{display:flex;flex-direction:column}
+.summary strong{font-family:var(--display);font-size:1.6rem;font-variant-numeric:tabular-nums}
+.tablewrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.9rem;min-width:560px}
+th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600}
+td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+.bar{position:relative;height:10px;width:120px;background:var(--bg);border:1px solid var(--line);border-radius:5px;margin-top:5px}
+.bar i{position:absolute;inset:0 auto 0 0;background:var(--accent);border-radius:5px}
+.bar u{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--target)}
+.pill{display:inline-block;font-size:.72rem;font-weight:600;border-radius:999px;padding:1px 8px;white-space:nowrap}
+.pill.ok{background:var(--good-soft);color:var(--good)}
+.pill.gap1{background:var(--warn-soft);color:var(--warn)}
+.pill.gap2{background:var(--bad-soft);color:var(--bad)}
+.reason{color:var(--muted);font-size:.84rem}
+.gaps{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.gap{border:1px solid var(--line);border-left:4px solid var(--bad);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:8px;background:var(--surface)}
+.gap.g1{border-left-color:var(--warn)}
+.gap .num{font-family:var(--display);font-size:.9rem;font-variant-numeric:tabular-nums}
+.gap p{font-size:.88rem}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:.78rem;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:14px;height:8px;border-radius:3px;background:var(--accent);display:inline-block}
+.tk{width:2px;height:12px;background:var(--target);display:inline-block}
+details{font-size:.85rem}
+details summary{cursor:pointer;color:var(--accent);font-weight:600}
+details ul{margin:8px 0 0;padding-left:18px;color:var(--muted)}
+.ci{display:flex;flex-direction:column;gap:8px;padding-top:14px;border-top:1px solid var(--line)}
+.ci:first-child{border-top:0;padding-top:0}
+.ci legend{font-weight:600;padding:0;margin-bottom:4px}
+.ci fieldset{border:0;margin:0;padding:0;min-width:0}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.opt{font:inherit;font-size:.88rem;color:inherit;background:var(--surface);border:1.5px solid var(--line);border-radius:999px;padding:6px 14px;cursor:pointer}
+.opt:hover{border-color:var(--accent)}
+.opt[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--accent);font-weight:600}
+.readout{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.readout .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.nextstep{border-left:4px solid var(--accent);padding:8px 12px;background:var(--surface);border-radius:6px;font-size:.92rem}
+.people{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.who{border:1px solid var(--line);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:8px;background:var(--surface)}
+.who .for{font-size:.75rem;color:var(--accent);font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.who p{font-size:.88rem}
+.who .ask{color:var(--muted);font-style:italic}
+.match{display:flex;gap:10px;align-items:center;font-size:.84rem;border-top:1px solid var(--line);padding-top:8px}
+.mini{width:30px;height:30px;flex:none;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-family:var(--display);font-weight:700;font-size:.8rem}
+.tag{font-size:.7rem;font-weight:600;border-radius:999px;padding:1px 8px;background:var(--accent-soft);color:var(--accent);text-transform:uppercase;letter-spacing:.04em}
+.hero{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:28px 24px;display:flex;flex-direction:column;gap:14px}
+.hero .problem{font-size:1.1rem;font-weight:500}
+.journey{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;counter-reset:j}
+.journey li{counter-increment:j;font-size:.8rem;border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:var(--bg)}
+.journey li::before{content:counter(j);font-family:var(--display);font-weight:700;color:var(--accent);margin-right:6px}
+.journey a{color:inherit;text-decoration:none}
+.month{border:1px solid var(--line);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:8px}
+.month ol{margin:0;padding-left:0;list-style:none;display:flex;flex-direction:column;gap:6px}
+.month li{display:grid;grid-template-columns:64px 1fr;gap:8px;font-size:.88rem}
+.month li b{font-family:var(--display);color:var(--muted);font-weight:500;font-variant-numeric:tabular-nums}
+.month li.talk{color:var(--accent)}
+pre.final{white-space:pre-wrap;font:inherit;font-size:.85rem;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:14px;margin:0;max-height:420px;overflow:auto}
+#copied{font-size:.85rem;color:var(--good);align-self:center}
+@media (max-width:640px){.journey{grid-template-columns:1fr 1fr}}
+@media (max-width:640px){.profiles{grid-template-columns:1fr} h1{font-size:1.6rem}}
+@media (prefers-reduced-motion:no-preference){.bar i{transition:width .3s ease}}
+
+/* ---------- app shell additions ---------- */
+a{color:var(--accent)}
+.topbar{max-width:1040px;margin:0 auto 24px;display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px;justify-content:space-between}
+.brand{font-family:var(--display);font-weight:700;font-size:1.15rem;color:var(--fg);text-decoration:none;display:flex;gap:8px;align-items:center}
+.brand i{width:26px;height:26px;border-radius:8px;background:var(--accent);display:inline-block}
+nav.tabs{display:flex;flex-wrap:wrap;gap:4px}
+nav.tabs a{font-size:.88rem;font-weight:500;color:var(--muted);text-decoration:none;padding:6px 10px;border-radius:8px}
+nav.tabs a:hover{color:var(--fg);background:var(--surface)}
+nav.tabs a[aria-current="page"]{color:var(--accent);background:var(--accent-soft)}
+.who-am-i{font-size:.82rem;color:var(--muted);display:flex;gap:10px;align-items:center}
+.linkbtn{font:inherit;font-size:.82rem;background:none;border:0;color:var(--accent);cursor:pointer;padding:0}
+.wrap.wide{max-width:1040px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+.stat strong{display:block;font-family:var(--display);font-size:1.7rem;font-variant-numeric:tabular-nums;line-height:1.2}
+.stat span{font-size:.84rem;color:var(--muted)}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:.85rem;font-weight:600}
+input[type=text],input[type=email],input[type=password],input[type=number],select{font:inherit;font-size:.92rem;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:9px 10px;width:100%}
+input:focus,select:focus{outline:2px solid var(--accent);outline-offset:1px}
+.form{display:flex;flex-direction:column;gap:12px}
+.err{color:var(--bad);font-size:.88rem;min-height:1.2em}
+.ok-msg{color:var(--good);font-size:.88rem}
+.progress{height:10px;background:var(--bg);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.progress i{display:block;height:100%;background:var(--accent)}
+.task{display:grid;grid-template-columns:24px 64px 1fr;gap:8px;align-items:start;font-size:.9rem;padding:6px 0;border-top:1px solid var(--line)}
+.task:first-of-type{border-top:0}
+.task input{margin-top:3px;width:16px;height:16px;accent-color:var(--accent)}
+.task b{font-family:var(--display);color:var(--muted);font-weight:500;font-variant-numeric:tabular-nums}
+.task.done span{color:var(--muted);text-decoration:line-through}
+.task.now{background:var(--accent-soft);border-radius:6px;padding-inline:6px;margin-inline:-6px}
+.task.talk span{color:var(--accent)}
+.task.talk.done span{color:var(--muted)}
+.card{border:1px solid var(--line);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:8px;background:var(--surface)}
+.mentor-head{display:flex;gap:10px;align-items:center}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip.hit{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.score{margin-left:auto;font-family:var(--display);font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums}
+.reasons{margin:0;padding-left:18px;font-size:.85rem;color:var(--muted)}
+.status{font-size:.72rem;font-weight:600;border-radius:999px;padding:1px 8px;text-transform:capitalize;white-space:nowrap}
+.status.pending{background:var(--warn-soft);color:var(--warn)}
+.status.accepted{background:var(--accent-soft);color:var(--accent)}
+.status.completed{background:var(--good-soft);color:var(--good)}
+.status.declined,.status.cancelled{background:var(--bad-soft);color:var(--bad)}
+.checks{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:6px}
+.checks label{display:flex;gap:8px;align-items:center;font-size:.9rem;font-weight:400}
+.empty{color:var(--muted);font-size:.92rem;border:1px dashed var(--line);border-radius:10px;padding:16px}
+.coach{white-space:pre-wrap;font-size:.92rem;border-left:4px solid var(--good);padding:10px 14px;background:var(--surface);border-radius:6px}
+.btn.sm{padding:6px 12px;font-size:.85rem}
+.btn:disabled{opacity:.5;cursor:default}
+.btn.danger{background:transparent;color:var(--bad);border-color:var(--bad)}
+.demo-logins{display:flex;flex-wrap:wrap;gap:8px}
+.hist td,.hist th{font-size:.86rem}
+.hist table{min-width:0}
+@media (max-width:640px){.topbar{flex-direction:column;align-items:flex-start}}
+
+/* ---------- CareerGym brand + marketing site ---------- */
+:root{--on-accent:#ffffff;--ink:#0f1a2b;--band:#eaf0f9}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--on-accent:#0d1420;--ink:#e7ecf3;--band:#141c27}}
+:root[data-theme="dark"]{--on-accent:#0d1420;--ink:#e7ecf3;--band:#141c27}
+.logo{width:28px;height:28px;flex:none}
+.brand span{letter-spacing:-.01em}
+body.public .topbar{max-width:1120px;position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);padding:12px 0;margin-bottom:0;flex-wrap:nowrap}
+body.public::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+body.public{padding-top:12px}
+body.public .wrap.wide{max-width:1120px;gap:0}
+.mk-nav{display:flex;gap:2px}
+.mk-nav button,.mk-foot nav button{font:inherit;font-size:.9rem;font-weight:500;color:var(--muted);background:none;border:0;padding:8px 12px;border-radius:8px;cursor:pointer}
+.mk-nav button:hover,.mk-foot nav button:hover{color:var(--fg);background:var(--surface)}
+.mk-auth{display:flex;gap:14px;align-items:center}
+.mk-login{color:var(--fg);font-weight:600;font-size:.92rem;text-decoration:none}
+.mk-login:hover{color:var(--accent)}
+a.btn{text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
+.btn.lg{padding:13px 22px;font-size:1rem;border-radius:10px}
+.btn.block{width:100%}
+.btn:hover{filter:brightness(1.07)}
+.btn.ghost:hover{background:var(--accent-soft);filter:none}
+.btn.inv{background:var(--on-accent);color:var(--accent);border-color:var(--on-accent)}
+.kicker{font-size:.78rem;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--accent)}
+.mk-hero{display:grid;grid-template-columns:1.1fr .9fr;gap:56px;align-items:center;padding:72px 0 80px}
+.mk-hero-copy{display:flex;flex-direction:column;gap:20px;min-width:0}
+.mk-hero h1{font-size:clamp(2.4rem,5.2vw,3.9rem);line-height:1.04;letter-spacing:-.025em;color:var(--ink)}
+.hl{color:var(--accent);background:linear-gradient(transparent 68%,var(--accent-soft) 68%)}
+.lede{font-size:1.15rem;color:var(--muted);max-width:34em;line-height:1.6}
+.fine{font-size:.85rem;color:var(--muted)}
+.preview{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px;display:flex;flex-direction:column;gap:14px;box-shadow:0 24px 60px -28px color-mix(in srgb,var(--accent) 45%,transparent);min-width:0}
+.pv-head{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.pv-row{display:grid;grid-template-columns:1fr 110px 74px;gap:12px;align-items:center;font-size:.88rem}
+.pv-row .bar{width:100%;margin:0}
+.pv-row b{font-size:.75rem;font-weight:600;text-align:right;white-space:nowrap}
+.pv-row b.bad{color:var(--bad)} .pv-row b.warn{color:var(--warn)} .pv-row b.good{color:var(--good)}
+.pv-match{display:flex;gap:10px;align-items:center;border-top:1px solid var(--line);padding-top:14px;font-size:.84rem}
+.pv-match div{display:flex;flex-direction:column;min-width:0}
+.pv-match div span{color:var(--muted)}
+.pv-cta{margin-left:auto;background:var(--accent);color:var(--on-accent);font-weight:600;font-size:.8rem;padding:6px 12px;border-radius:8px}
+.mk-band{background:var(--band);border-radius:20px;padding:40px}
+.mk-pains{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:32px}
+.mk-pains h3{font-size:1.1rem;margin-bottom:6px}
+.mk-pains p{color:var(--muted);font-size:.95rem}
+.mk-sec{padding:96px 0 0;display:flex;flex-direction:column;gap:14px}
+.mk-sec>h2,.mk-split h2,.mk-mentor h2{font-size:clamp(1.7rem,3.4vw,2.4rem);letter-spacing:-.02em;line-height:1.15;max-width:22em;color:var(--ink)}
+.mk-steps{list-style:none;margin:24px 0 0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.mk-steps li{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px;display:flex;flex-direction:column;gap:10px}
+.mk-steps b{font-family:var(--display);font-size:.85rem;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent)}
+.mk-steps p{color:var(--muted);font-size:.92rem}
+.mk-split,.mk-mentor{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
+.mk-split>div,.mk-mentor>div{display:flex;flex-direction:column;gap:14px;min-width:0}
+.mk-split p,.mk-mentor p{color:var(--muted);font-size:1rem;line-height:1.6}
+.mk-comps{display:flex;flex-wrap:wrap;gap:8px;align-content:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:24px}
+.mk-comps>span{font-size:.88rem;font-weight:500;border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:6px 12px}
+.mk-levels{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;width:100%;margin-top:12px;border-top:1px solid var(--line);padding-top:16px}
+.mk-levels div{display:flex;flex-direction:column;gap:2px}
+.mk-levels b{font-family:var(--display);font-size:1.5rem;color:var(--accent)}
+.mk-levels span{font-size:.8rem;color:var(--muted)}
+.ticks{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.ticks li{padding-left:26px;position:relative;font-size:.94rem}
+.ticks li::before{content:"";position:absolute;left:0;top:.3em;width:16px;height:16px;border-radius:50%;background:var(--accent-soft)}
+.ticks li::after{content:"";position:absolute;left:5px;top:calc(.3em + 4px);width:6px;height:4px;border-left:2px solid var(--accent);border-bottom:2px solid var(--accent);transform:rotate(-45deg)}
+.mk-req{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px;display:flex;flex-direction:column;gap:14px;box-shadow:0 24px 60px -30px color-mix(in srgb,var(--accent) 40%,transparent)}
+.mk-req p{font-style:italic;color:var(--fg)}
+.mk-req .muted{font-size:.84rem}
+.mk-prices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:20px;align-items:stretch}
+.price{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:26px;display:flex;flex-direction:column;gap:12px;position:relative}
+.price .ticks{flex:1;margin:6px 0 10px}
+.price.featured{border:2px solid var(--accent)}
+.price .tag{position:absolute;top:-11px;left:24px;background:var(--accent);color:var(--on-accent)}
+.amt{font-family:var(--display);font-size:2.2rem;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+.amt small{font-family:var(--body);font-size:.9rem;font-weight:500;color:var(--muted);margin-left:4px}
+.faq{display:flex;flex-direction:column;margin-top:12px;border-top:1px solid var(--line);max-width:820px}
+.faq details{border-bottom:1px solid var(--line);padding:18px 0;font-size:1rem}
+.faq summary{color:var(--fg);font-weight:600;list-style:none;display:flex;justify-content:space-between;gap:16px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font-family:var(--display);color:var(--accent);font-size:1.3rem;line-height:1}
+.faq details[open] summary::after{content:"–"}
+.faq p{color:var(--muted);margin-top:10px;line-height:1.6;max-width:65ch}
+.mk-final{margin-top:96px;background:var(--accent);color:var(--on-accent);border-radius:22px;padding:56px 40px;display:flex;flex-direction:column;align-items:center;gap:22px;text-align:center}
+.mk-final h2{font-size:clamp(1.6rem,3.4vw,2.3rem);max-width:20em;letter-spacing:-.02em}
+.mk-foot{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;justify-content:space-between;padding:40px 0 8px;margin-top:56px;border-top:1px solid var(--line);font-size:.88rem}
+.mk-foot nav{display:flex;flex-wrap:wrap}
+.auth{display:grid;place-items:center;padding:48px 0 72px}
+.auth-card{width:100%;max-width:440px;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:32px;display:flex;flex-direction:column;gap:18px;box-shadow:0 24px 60px -34px color-mix(in srgb,var(--accent) 45%,transparent)}
+.auth-card h1{font-size:1.7rem;letter-spacing:-.02em}
+.auth-card .center{text-align:center;font-size:.9rem}
+.hint{font-weight:400;font-size:.78rem;color:var(--muted)}
+.seg{display:grid;grid-template-columns:1fr 1fr;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:4px;gap:4px}
+.seg button{font:inherit;font-size:.9rem;font-weight:600;color:var(--muted);background:none;border:0;border-radius:7px;padding:9px;cursor:pointer}
+.seg button[aria-checked="true"]{background:var(--surface);color:var(--accent);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+@media (max-width:900px){
+  .mk-nav{display:none}
+  .mk-hero,.mk-split,.mk-mentor{grid-template-columns:1fr;gap:36px}
+  .mk-hero{padding:40px 0 56px}
+  .mk-steps{grid-template-columns:1fr 1fr}
+  .mk-prices{grid-template-columns:1fr}
+  .mk-pains{grid-template-columns:1fr;gap:20px}
+}
+@media (max-width:640px){
+  body.public .topbar{flex-direction:row;align-items:center}
+  .mk-steps{grid-template-columns:1fr}
+  .mk-band{padding:26px}
+  .mk-sec{padding-top:64px}
+  .mk-final{padding:40px 22px;margin-top:64px}
+  .pv-row{grid-template-columns:1fr 70px 62px;gap:8px;font-size:.8rem}
+  .auth-card{padding:24px}
+  .mk-auth{gap:10px}
+  .mk-auth .btn{padding:7px 12px}
+}
+.mk-split>.mk-comps{flex-direction:row;gap:8px}
+.quotes{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-top:12px}
+.quotes-h{margin-top:20px;font-size:1.05rem}
+.quote{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:16px;justify-content:space-between}
+.quote blockquote{margin:0;font-size:1rem;line-height:1.6;color:var(--fg)}
+.quote blockquote::before{content:"\201C";font-family:var(--display);font-size:2.4rem;line-height:0;color:var(--accent);display:block;height:18px}
+.quote figcaption{display:flex;gap:10px;align-items:center;font-size:.86rem}
+.quotes.compact{grid-template-columns:1fr;margin-top:0}
+.quotes.compact .quote{padding:12px 14px;border-radius:10px;background:var(--bg);gap:10px}
+.quotes.compact blockquote{font-size:.86rem}
+.quotes.compact blockquote::before{font-size:1.8rem;height:12px}
+.why{border-left:3px solid var(--accent-soft);padding:2px 0 2px 12px;display:flex;flex-direction:column;gap:2px}
+.why p{font-size:.86rem;font-style:italic;color:var(--fg)}
+#stories .quotes{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+
+.path-hero{gap:12px}
+.path-hero h1{font-size:clamp(1.7rem,3.6vw,2.3rem);letter-spacing:-.02em}
+.path-index{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.path-index a{display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--fg);text-decoration:none;font-weight:600;font-size:.92rem}
+.path-index a:hover{border-color:var(--accent)}
+.path-index b{font-family:var(--display);width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent);font-size:.8rem;flex:none}
+.path-index .pill{margin-left:auto}
+.path-gap{gap:18px}
+.path-top{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.path-top h2{font-size:1.5rem;margin-top:4px}
+.levels{display:flex;align-items:center;gap:10px}
+.levels span{display:flex;flex-direction:column;align-items:center;font-size:.72rem;color:var(--muted);min-width:76px;border:1px solid var(--line);border-radius:10px;padding:6px 10px;background:var(--bg)}
+.levels b{font-family:var(--display);font-size:1.3rem;color:var(--fg);line-height:1.2}
+.levels .to{border-color:var(--accent);background:var(--accent-soft)}
+.levels .to b{color:var(--accent)}
+.levels i{font-style:normal;color:var(--muted)}
+.path-good{background:var(--accent-soft);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:4px}
+.path-good p{font-size:.98rem;color:var(--fg)}
+.path-why{font-size:.88rem;color:var(--muted)}
+.path-actions{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:10px}
+.path-actions li{display:grid;grid-template-columns:84px 1fr;gap:12px;align-items:baseline;font-size:.94rem}
+.path-actions .tag{justify-self:start}
+.path-foot{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.path-proof,.path-mentor{border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:4px;font-size:.92rem}
+.path-mentor{border-color:color-mix(in srgb,var(--accent) 40%,var(--line))}
+.path-next{flex-direction:row;justify-content:space-between;align-items:center;flex-wrap:wrap}
+.path-next h2{font-size:1.25rem}
+@media (max-width:640px){.path-foot{grid-template-columns:1fr}.path-actions li{grid-template-columns:1fr;gap:4px}}
+
+.notes{border-top:1px solid var(--line);padding-top:12px;display:flex;flex-direction:column;gap:10px}
+.notes-h{display:flex;justify-content:space-between;align-items:baseline;font-size:.8rem}
+.snote{background:var(--bg);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;font-size:.9rem;color:var(--fg)}
+.snote-meta{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;font-size:.82rem}
+.action-items{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.action-items li{display:grid;grid-template-columns:1fr auto;gap:4px 10px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+.ai-text{font-weight:500}
+.ai-meta{grid-column:1;display:flex;gap:8px;align-items:center;font-size:.78rem;flex-wrap:wrap}
+.action-items li>.btn,.action-items li>.ai-goal{grid-column:2;grid-row:1 / span 2;white-space:nowrap}
+.ai-goal{font-size:.8rem;font-weight:600;color:var(--muted);text-decoration:none}
+.ai-goal.done{color:var(--good)}
+.add-note summary{font-size:.86rem}
+.add-note form{margin-top:10px}
+.ai-row{display:grid;grid-template-columns:1fr 170px 150px;gap:8px}
+.ai-row.wide{grid-template-columns:1fr 200px 160px}
+.gap-progress{display:flex;flex-direction:column;gap:10px}
+.gp-row{display:grid;grid-template-columns:220px 1fr 130px;gap:14px;align-items:center;font-size:.9rem}
+.gp-name{font-weight:600;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.gp-num{font-size:.82rem;color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
+.goal-list{display:flex;flex-direction:column}
+.goal{display:flex;justify-content:space-between;gap:16px;align-items:center;padding:12px 0;border-top:1px solid var(--line)}
+.goal:first-child{border-top:0;padding-top:0}
+.goal-main{display:flex;flex-direction:column;gap:4px;min-width:0}
+.goal-main p{font-size:.95rem;font-weight:500}
+.goal.done .goal-main p{color:var(--muted);text-decoration:line-through}
+.goal-src{font-size:.8rem}
+.goal-ctl{display:flex;gap:8px;flex:none}
+.goal-ctl input{width:150px}
+.goal-ctl select{width:140px;font-weight:600}
+.st.done{color:var(--good)} .st.in_progress{color:var(--accent)}
+input.late{border-color:var(--bad);color:var(--bad)}
+.overdue-n{color:var(--bad)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media (max-width:640px){.ai-row,.ai-row.wide{grid-template-columns:1fr}.gp-row{grid-template-columns:1fr;gap:6px}.gp-num{text-align:left}.goal{flex-direction:column;align-items:stretch}.goal-ctl input,.goal-ctl select{width:auto;flex:1}}
+
+.session-list{display:grid;grid-template-columns:1fr;gap:16px}
+nav.tabs a{padding:6px 9px}
+
+</style>
+</head>
+<body>
+<header class="topbar" id="topbar"></header>
+<main class="wrap wide" id="view" aria-live="polite"><p class="muted">Loading…</p></main>
+<script>window.NM_CONTENT={"LEVELS":["","Emerging","Developing","Proficient","Leading"],"COMPS":[{"id":"strategy","name":"Product strategy","q":"Tell us about a time you set or changed the product direction for your area. How did you decide what not to build?","groups":[{"label":"vision or long-term direction","k":["vision","strategy","north star","long-term","roadmap","direction","bet"]},{"label":"explicit trade-offs","k":["trade-off","tradeoff","not build","said no","deprioritiz","prioritiz","focus","sunset","killed"]},{"label":"market or competitor view","k":["market","competitor","competition","segment","positioning","differentiat","trend"]},{"label":"tie to company goals","k":["okr","company goal","business goal","objective","align","mission"]}],"action":"Write a one-page strategy for your area (where to play, how to win, what you will stop doing) and review it with your VP and a mentor who has run a product org."},{"id":"execution","name":"Execution and delivery","q":"Describe a complex launch you drove end to end. What went wrong and how did you keep it on track?","groups":[{"label":"planning and milestones","k":["plan","milestone","timeline","sprint","scope","mvp","phase"]},{"label":"risk handling","k":["risk","blocker","delay","slipped","escalat","mitigat","dependency","went wrong"]},{"label":"cross-functional delivery","k":["engineering","design","qa","cross-functional","squad","team"]},{"label":"outcome shipped","k":["launched","shipped","released","delivered","go-live","rollout"]}],"action":"Run your next launch with a written risk register and weekly status note, then share a short retro with lessons learned."},{"id":"stakeholder","name":"Stakeholder influence","q":"Tell us about a time you had to convince senior leaders or another team to support a decision they initially disagreed with.","groups":[{"label":"senior or cross-team audience","k":["vp","cxo","ceo","cto","leadership","sales","marketing","exec","director","head of"]},{"label":"handled disagreement","k":["disagree","pushback","conflict","resist","objection","concern","skeptic"]},{"label":"used evidence to persuade","k":["data","evidence","prototype","pilot","customer quote","business case","proof"]},{"label":"reached alignment","k":["agreed","alignment","buy-in","consensus","convinced","approved","signed off"]}],"action":"Pick one cross-team decision this quarter and run it with a pre-read, 1:1 pre-wires with each senior stakeholder, and a clear decision owner."},{"id":"people","name":"People leadership","q":"How have you grown other PMs or team members? Give a specific example of someone you coached.","groups":[{"label":"direct coaching or mentoring","k":["mentor","coach","1:1","one-on-one","feedback","guided"]},{"label":"hiring or team building","k":["hired","hiring","interview","onboard","team of","built the team","manage"]},{"label":"growth outcome for others","k":["promoted","grew","growth","career","stretch","took ownership","independent"]},{"label":"team health and culture","k":["culture","morale","trust","psychological","retention","rituals"]}],"action":"Ask to formally mentor one junior PM and take on an interview loop role. Track their growth goals monthly so you have concrete leadership evidence."},{"id":"customer","name":"Customer insight","q":"How do you stay close to customers? Share an insight that changed what your team built.","groups":[{"label":"direct customer contact","k":["interview","customer call","customer visit","user research","talked to","shadow"]},{"label":"a specific insight","k":["insight","learned","discovered","realised","realized","pain point","problem"]},{"label":"changed the product","k":["changed","pivot","redesign","new feature","built","removed"]},{"label":"ongoing feedback loop","k":["nps","feedback","survey","support ticket","churn reason","advisory","every week"]}],"action":"Set up a standing customer conversation cadence (for example 4 calls a month) and publish a monthly insights note to your org."},{"id":"data","name":"Data and experimentation","q":"Walk us through a decision you made with data. What metrics did you look at and what did you conclude?","groups":[{"label":"named metrics","k":["metric","kpi","retention","conversion","activation","dau","mau","arr","nps","funnel"]},{"label":"experiments or analysis","k":["a/b","experiment","test","cohort","analysis","sql","dashboard","hypothesis"]},{"label":"a concrete number","k":["__number__"]},{"label":"decision made from data","k":["decided","concluded","rolled out","stopped","doubled down","so we"]}],"action":"Define a metric tree for your product area and run at least one structured experiment with a written hypothesis and readout."},{"id":"communication","name":"Communication","q":"How do you communicate product plans to different audiences, from engineers to the leadership team?","groups":[{"label":"tailors to audience","k":["audience","tailor","engineers","leadership","exec","customers","board"]},{"label":"written artefacts","k":["prd","doc","memo","one-pager","narrative","spec","written"]},{"label":"regular cadence","k":["weekly","monthly","quarterly","review","update","newsletter","demo day"]},{"label":"clarity techniques","k":["story","simple","clear","why","summary","tl;dr","visual"]}],"action":"Write a monthly product update for leadership in a fixed format (what shipped, what we learned, what's next, asks) and get feedback on clarity."},{"id":"business","name":"Business acumen","q":"How does your product make money, and how have your decisions affected revenue, cost or margins?","groups":[{"label":"revenue model","k":["pricing","revenue","arr","mrr","subscription","upsell","monetiz","plan","tier"]},{"label":"unit economics","k":["cac","ltv","margin","cost","payback","churn","expansion"]},{"label":"a concrete number","k":["__number__"]},{"label":"business outcome owned","k":["grew","increased","reduced","saved","impact","p&l","business case"]}],"action":"Partner with finance to build a simple P&L view of your product line and present one pricing or packaging recommendation."}],"PROFILES":[{"id":"global","name":"Global SaaS company","blurb":"Scale, many stakeholders, leads PMs","t":{"strategy":4,"execution":3,"stakeholder":4,"people":4,"customer":3,"data":3,"communication":4,"business":3}},{"id":"early","name":"Early-stage startup","blurb":"Pre-seed to seed, hands-on, speed","t":{"strategy":3,"execution":4,"stakeholder":2,"people":2,"customer":4,"data":3,"communication":3,"business":3}},{"id":"growth","name":"Series A/B startup","blurb":"Building the team, scaling what works","t":{"strategy":3,"execution":4,"stakeholder":3,"people":3,"customer":3,"data":4,"communication":3,"business":4}}],"SAMPLE":{"strategy":"I own the ticketing workflow area. Last year I proposed a roadmap focused on automation for mid-market customers and we deprioritized two custom requests from large accounts to keep focus.","execution":"I drove the launch of a new SLA management module with engineering, design and QA. We had a dependency on the platform team that slipped by three weeks, so I escalated early, cut scope to an MVP, and we shipped on the revised plan.","stakeholder":"Sales wanted a custom feature for one deal. I shared usage data and customer interviews showing low demand and we agreed to a lighter workaround instead.","people":"I help new PMs when they join and review their PRDs.","customer":"I do customer interviews every month and read support tickets. One insight was that admins struggled with bulk edits, so we built a bulk action feature that reduced support tickets.","data":"We tracked activation and weekly retention on a dashboard. An A/B test of a new onboarding checklist increased activation from 31% to 38%, so we rolled it out to all new accounts.","communication":"I write PRDs for engineers and share a monthly update with my manager.","business":"Our product is subscription based with tiered plans. I am not deeply involved in pricing."},"CHECKIN":[{"id":"workload","q":"How much of your week went to firefighting and reactive work?","o":[{"l":"Mostly planned","v":0,"t":"most of your week is planned work"},{"l":"About half","v":1,"t":"about half your week goes to reactive work"},{"l":"Almost all of it","v":2,"t":"almost all of your week is going to firefighting"}]},{"id":"pressure","q":"How is the pressure from your manager, skip-level and your own team?","o":[{"l":"Manageable","v":0,"t":"pressure from above and below feels manageable"},{"l":"Heavy from one side","v":1,"t":"you are carrying heavy pressure from one side of the org"},{"l":"Squeezed from above and below","v":2,"t":"you are squeezed between your manager and skip-level above and your team below"}]},{"id":"energy","q":"How is your energy at the end of most days?","o":[{"l":"Energised","v":0,"t":"your energy is good"},{"l":"Getting by","v":1,"t":"you are getting by on energy"},{"l":"Running on empty","v":2,"t":"you are running on empty"}]}],"CI_SAMPLE":{"workload":2,"pressure":2,"energy":1},"WHO":{"strategy":{"who":"A Director or Head of Product, inside or outside your company","tag":"Direction","why":"They set direction for a whole org and can show you what strategy looks like one level up.","ask":"Can I walk you through my one-page strategy and hear what's missing?","m":["AR","Anita R.","Head of Product, Series B SaaS"]},"execution":{"who":"A senior engineering manager you have shipped with","tag":"Skills","why":"They see exactly where launches slip and can name your blind spots honestly.","ask":"On our last launch, what would you have wanted me to catch earlier?","m":["VK","Vikram K.","Sr Engineering Manager, your org"]},"stakeholder":{"who":"Your skip-level manager","tag":"Visibility","why":"They weigh in on promotions and know how senior leaders see your influence today.","ask":"What would you need to see from me to trust me with a bigger cross-team call?","m":["MS","Meera S.","VP Product, your skip-level"]},"people":{"who":"A peer who moved from PM to Group PM in the last two years","tag":"Direction","why":"They made the move you want and know which leadership evidence actually got them there.","ask":"What did you do in the year before your promotion that made the case?","m":["RN","Rahul N.","Group PM, ex-Freshworks"]},"customer":{"who":"A customer success or support lead","tag":"Perspective","why":"They hear customer pain every day and can point you to the accounts worth calling.","ask":"Which three customers should I talk to this month, and why?","m":["DL","Divya L.","CS Lead, your org"]},"data":{"who":"An analytics or data science lead","tag":"Skills","why":"They can sanity-check your metric tree and help you design a clean experiment.","ask":"Can you review my metric tree and tell me which number you would trust least?","m":["SP","Sanjay P.","Analytics Lead, your org"]},"communication":{"who":"A leader who already reads your updates","tag":"Visibility","why":"They are your audience, so they can tell you what they skim and what they wish you included.","ask":"When you read my updates, what do you skip and what do you want more of?","m":["MS","Meera S.","VP Product, your skip-level"]},"business":{"who":"A finance business partner, or a PM who owns pricing","tag":"Skills","why":"They can show you how your product's revenue and costs really add up.","ask":"Could you show me how our product line's P&L is put together?","m":["KT","Kavya T.","Finance BP, your org"]}},"ACTS":{"strategy":["Read your company's last two strategy docs and note what you would change.","Draft a one-page strategy for your area: where to play, how to win, what to stop.","Present the revised strategy in a team forum and ask for one decision."],"execution":["Start a written risk register for your current project.","Send a weekly status note with risks, decisions and asks.","Run a 30-minute retro at your next milestone and share the lessons."],"stakeholder":["Map your top five stakeholders and what each one cares about.","Pre-wire each stakeholder 1:1 before one contested decision.","Write up the decision with a clear owner and share it widely."],"people":["Offer to mentor one junior PM and agree two growth goals.","Join an interview loop and write structured feedback for each candidate.","Hold a monthly check-in with your mentee and record what changed."],"customer":["Book four customer calls for the month.","Read 20 recent support tickets and tag the top three pains.","Publish a one-page customer insights note to your org."],"data":["Sketch a metric tree from your north-star metric down to inputs you control.","Write a hypothesis and design one experiment.","Share the readout with a decision, even if the result was flat."],"communication":["Collect three of your past updates and mark what you would cut.","Send a leadership update in a fixed format: shipped, learned, next, asks.","Ask two readers what they skim and adjust the format."],"business":["Learn your product's pricing tiers and revenue split.","Work out rough CAC, LTV or margin for your area with finance.","Present one pricing or packaging recommendation with numbers."]},"FALLBACK":{"name":"Consolidate and get visible","acts":["List the evidence you have built so far.","Ask your manager what a promotion case needs at your company.","Ask your skip-level for 20 minutes to share what you have done.","Write a half-page case for your next role and get feedback on it."]},"PATHS":{"strategy":{"good":"You set a multi-quarter direction for your area, say clearly what you will not build, and tie every bet to a company goal. Leaders quote your strategy back to you.","actions":[["Practice","Rewrite your current roadmap as a one-page strategy: where to play, how to win, and three things you will stop doing."],["Stretch","Volunteer to lead next quarter's planning for your area and present the trade-offs to your VP, not just the list of features."],["Habit","Each month, write a half-page note on one market or competitor shift and what it means for your product."],["Read","Good Strategy Bad Strategy by Richard Rumelt, and Escaping the Build Trap by Melissa Perri."]],"proof":"A strategy doc your VP signed off, and at least one item you deprioritized on purpose with the reasoning written down.","mentor":"Bring your one-page draft to someone who has run a product org. They'll spot what's missing one level up faster than any book."},"execution":{"good":"Complex launches ship close to plan because you see risks early, cut scope deliberately, and keep every function aligned without heroics.","actions":[["Practice","Start a written risk register on your current project and review it with your engineering lead every week."],["Stretch","Take ownership of a launch with a hard external dependency, such as another team or a partner."],["Habit","Send a five-line weekly status note: progress, risks, decisions needed, asks, next milestone."],["Reflect","Run a 30-minute retro at each milestone and share three lessons with your team."]],"proof":"Two launches delivered within two weeks of plan, with retros that show you caught the main risk before it hit.","mentor":"A senior engineering manager you've shipped with can tell you, honestly, where your launches slip."},"stakeholder":{"good":"You can bring senior leaders and other teams to a decision they started out skeptical of, using evidence and pre-work rather than escalation.","actions":[["Practice","Map your top five stakeholders: what each one cares about, what they fear, and how they like to receive information."],["Stretch","Pick one contested cross-team decision this quarter and own it end to end, from pre-read to written decision."],["Habit","Pre-wire every important meeting with short 1:1 conversations, so nobody is surprised in the room."],["Read","Influence Without Authority by Allan Cohen and David Bradford."]],"proof":"A decision you drove that a senior leader initially disagreed with, written up with the owner and the evidence that changed minds.","mentor":"Your skip-level or a VP can tell you how senior leaders see your influence today, which is hard to learn any other way."},"people":{"good":"Other people grow because of you. You coach PMs, help hire well, and can point to someone who took on more because you invested in them.","actions":[["Practice","Offer to mentor one junior PM. Agree two growth goals together and meet every two weeks."],["Stretch","Join an interview loop and write structured feedback for every candidate you see."],["Habit","In each 1:1 with your mentee, ask one coaching question before you give any advice."],["Read","The Making of a Manager by Julie Zhuo, and Radical Candor by Kim Scott."]],"proof":"A mentee who took on a bigger scope, and a hiring decision you shaped. These are the two strongest signals in a leadership promotion case.","mentor":"Someone who recently moved from PM to Group PM can tell you which leadership evidence actually counted."},"customer":{"good":"You stay close to customers on a steady rhythm, and you can name an insight that changed what your team built.","actions":[["Practice","Book four customer conversations this month, and write down one surprise from each."],["Stretch","Run a small customer advisory group for your area, meeting once a quarter."],["Habit","Read twenty support tickets every month and tag the top three pains."],["Read","Continuous Discovery Habits by Teresa Torres."]],"proof":"A monthly insights note your org reads, and one roadmap change you can trace back to a customer conversation.","mentor":"A customer success lead can point you to the accounts worth calling and the patterns they already see."},"data":{"good":"You decide with data. You know your metric tree, design clean experiments, and act on results, including flat ones.","actions":[["Practice","Sketch a metric tree from your north-star metric down to the inputs your team controls."],["Stretch","Design and run one experiment with a written hypothesis, success metric and decision rule set in advance."],["Habit","Open every product review with the three numbers that matter most, and what changed since last time."],["Read","Trustworthy Online Controlled Experiments by Ron Kohavi, Diane Tang and Ya Xu."]],"proof":"An experiment readout with a clear decision, and a dashboard your team actually uses to steer.","mentor":"An analytics lead can stress-test your metric tree and tell you which number they'd trust least."},"communication":{"good":"Your updates are short, clear and tailored. Engineers, executives and customers each get what they need from you, without follow-up questions.","actions":[["Practice","Rewrite your last update in a fixed format: what shipped, what we learned, what's next, and asks."],["Stretch","Present your area's plan at a leadership review or an all-hands."],["Habit","Lead every document with a three-line summary a busy executive can read in thirty seconds."],["Read","The Pyramid Principle by Barbara Minto."]],"proof":"Leaders forward your updates without edits, and you get invited to present rather than asked to send a doc.","mentor":"A leader who already reads your updates can tell you what they skim and what they wish you included."},"business":{"good":"You understand how your product makes money and can tie your decisions to revenue, cost and margin with real numbers.","actions":[["Practice","Learn your product's pricing tiers and revenue split, and explain them to a peer in five minutes."],["Stretch","Partner with finance to build a simple P&L view of your product line."],["Habit","Add the expected revenue or cost impact to every roadmap item you propose."],["Read","Monetizing Innovation by Madhavan Ramanujam and Georg Tacke."]],"proof":"A pricing or packaging recommendation backed by numbers, presented to leadership.","mentor":"A finance partner or a PM who owns pricing can walk you through how the P&L really adds up."}}};</script>
+<script>window.CG_TESTIMONIALS=[{"quote": "My week disappears into firefighting. Thinking about my own next move always gets pushed to next quarter.", "role": "Product manager, 12 years"}, {"quote": "Leadership expects more from above and my team needs more from below. I'm squeezed in the middle, and nobody is looking at my growth.", "role": "Senior product manager, 10 years"}, {"quote": "When I feel stuck, I end up asking an AI chatbot. I get generic advice, not a plan for my situation.", "role": "Product lead, 9 years"}, {"quote": "I reach out to my network, but I don't know who the right person is to talk to, or what to ask them.", "role": "Group product manager, 14 years"}];</script>
+<script>
+/* In-browser API for the static build (Vercel, any static host). Mirrors the routes in nextmove/server.py.
+ * Implements the same /api routes as nextmove/server.py, storing data in this browser only.
+ * Requires window.NM_CONTENT (nextmove/content.json) to be defined first. */
+"use strict";
+(function () {
+  const C = window.NM_CONTENT;
+  const KEY = "careergym-v2";
+  const COMP_BY_ID = Object.fromEntries(C.COMPS.map((c) => [c.id, c]));
+  const PROFILE_BY_ID = Object.fromEntries(C.PROFILES.map((p) => [p.id, p]));
+  const MOVES = [
+    { id: "pm_to_lead", name: "Senior PM to product leader (Head of / Director)" },
+    { id: "pm_to_gpm", name: "PM to Group PM (first people-lead role)" },
+    { id: "big_to_startup", name: "Large company to startup" },
+    { id: "startup_to_big", name: "Startup to large company" },
+    { id: "eng_to_pm", name: "Engineering to product" },
+    { id: "restart", name: "Returning after a career break" },
+  ];
+  const MOVE_IDS = new Set(MOVES.map((m) => m.id));
+  const now = (d = 0) => new Date(Date.now() + d * 86400000).toISOString().replace(/\.\d+Z$/, "+00:00");
+  class ApiError extends Error { constructor(status, msg) { super(msg); this.status = status; } }
+
+  // ---------------------------------------------------------------- storage
+  let mem = null;
+  function load() {
+    if (mem) return mem;
+    try { const raw = localStorage.getItem(KEY); if (raw) mem = JSON.parse(raw); } catch (e) { /* storage blocked: memory only */ }
+    if (!mem) { mem = seed(); save(); }
+    return mem;
+  }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(mem)); } catch (e) { /* memory only */ } }
+  function nextId(db, kind) { db.seq[kind] = (db.seq[kind] || 0) + 1; return db.seq[kind]; }
+  function pw(p) { // local hash; data stays in this browser
+    let h = 2166136261; for (const ch of "nm:" + p) { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619); } return (h >>> 0).toString(16);
+  }
+
+  // ---------------------------------------------------------------- domain (port of nextmove/domain.py)
+  function readCheckin(answers, topGap) {
+    const parts = C.CHECKIN.map((q) => {
+      const i = answers[q.id];
+      if (!Number.isInteger(i) || i < 0 || i >= q.o.length) throw new ApiError(400, `Missing or invalid answer for ${q.id}`);
+      return q.o[i];
+    });
+    const total = parts.reduce((a, p) => a + p.v, 0);
+    const level = total >= 4 ? "High" : total >= 2 ? "Some" : "Low";
+    const gapName = topGap ? COMP_BY_ID[topGap].name.toLowerCase() : "your top gap";
+    const lead = total >= 4 ? "This looks less like a skills problem and more like a time problem." : total >= 2 ? "You have some room, but it is easy to lose." : "You have headroom right now, which is the best time to plan a move.";
+    const close = total >= 4 ? "Feeling stuck here is a normal response to that load, not a sign you have stalled. The aim this week is to protect a small slice of time, not to plan your whole career." : `Use that room on one thing that moves your career forward, starting with ${gapName}.`;
+    const summary = `This week ${parts[0].t}, ${parts[1].t}, and ${parts[2].t}. ${lead} ${close}`;
+    const val = Object.fromEntries(C.CHECKIN.map((q) => [q.id, q.o[answers[q.id]].v]));
+    let worst = "energy"; for (const id of ["energy", "pressure", "workload"]) if (val[id] > val[worst]) worst = id;
+    const steps = {
+      energy: "Pick one recurring meeting to skip or shorten this week, and use those 30 minutes to rest, not to catch up.",
+      pressure: "In your next 1:1, ask your manager which single priority matters most this month, and name one thing you will drop to make room for it.",
+      workload: `Block one 30-minute "think time" slot on Friday morning before the week fills up, and spend it only on ${gapName}.`,
+    };
+    let step = steps[worst];
+    if (val[worst] === 0) {
+      const who = topGap ? C.WHO[topGap].who.replace(/^Your /, "your ").replace(/^A /, "a ") : "a mentor";
+      step = `Book a 30-minute conversation with ${who} about ${gapName}.`;
+    }
+    return { total, level, summary, step };
+  }
+
+  function scoreAnswer(c, text) {
+    const t = (text || "").toLowerCase();
+    const words = t.split(/\s+/).filter(Boolean).length;
+    const hasNum = /\d/.test(t);
+    const hit = [], miss = [];
+    c.groups.forEach((g) => (g.k.some((k) => (k === "__number__" ? hasNum : t.includes(k))) ? hit : miss).push(g.label));
+    if (words === 0) return { s: 1, reason: "No answer given." };
+    let s = !hit.length ? 1 : hit.length === 1 ? 2 : hit.length <= 3 ? 3 : 4;
+    if (s === 3 && hit.length === 3 && hasNum && c.groups.every((g) => !g.k.includes("__number__"))) s = 4;
+    let capped = false;
+    if (words < 15 && s > 2) { s = 2; capped = true; }
+    let reason;
+    if (capped) reason = `Answer is short (${words} words). Add a concrete example to show ${miss[0] || "depth"}.`;
+    else if (s === 4) reason = `Strong: shows ${hit.slice(0, 3).join(", ")}.`;
+    else if (hit.length) reason = `Shows ${hit.join(", ")}, but missing ${miss.slice(0, 2).join(" and ")}.`;
+    else reason = `No clear evidence of ${c.groups.slice(0, 2).map((g) => g.label).join(" or ")}.`;
+    return { s, reason };
+  }
+
+  function assess(target, answers) {
+    const p = PROFILE_BY_ID[target];
+    if (!p) throw new ApiError(400, "Unknown target profile");
+    const rows = C.COMPS.map((c) => { const r = scoreAnswer(c, answers[c.id]); const tgt = p.t[c.id]; return { id: c.id, name: c.name, cur: r.s, tgt, gap: Math.max(0, tgt - r.s), reason: r.reason }; });
+    const top = rows.filter((r) => r.gap > 0).sort((a, b) => b.gap - a.gap || b.tgt - a.tgt).slice(0, 3);
+    return { rows, top_gaps: top.map((r) => r.id), summary: {
+      avg: Math.round(rows.reduce((a, r) => a + r.cur, 0) / rows.length * 10) / 10,
+      met: rows.filter((r) => r.gap === 0).length, total_gap: rows.reduce((a, r) => a + r.gap, 0), count: rows.length } };
+  }
+
+  function buildPlan(topGaps) {
+    const tasks = [];
+    for (let m = 0; m < 3; m++) {
+      const gid = topGaps[m] || null;
+      let focus, weeks;
+      if (!gid) { focus = C.FALLBACK.name; weeks = C.FALLBACK.acts.map((t) => [t, false]); }
+      else {
+        const a = C.ACTS[gid], w = C.WHO[gid];
+        weeks = [[a[0], false], [`Talk to ${w.who[0].toLowerCase() + w.who.slice(1)}. Ask: "${w.ask}"`, true], [a[1], false], [a[2], false]];
+        focus = COMP_BY_ID[gid].name;
+      }
+      weeks.forEach(([text, talk], j) => tasks.push({ month: m + 1, week: m * 4 + j + 1, focus, competency: gid, text, talk }));
+    }
+    return tasks;
+  }
+
+  function matchMentors(mentors, rows, topGaps, goalMove, slots) {
+    const gapSize = Object.fromEntries((rows || []).map((r) => [r.id, r.gap]));
+    return mentors.map((m) => {
+      let score = 0; const reasons = [], covers = [];
+      topGaps.forEach((g, rank) => { if (m.strengths.includes(g)) { score += 3 * Math.max(1, gapSize[g] || 1) + (rank === 0 ? 1 : 0); covers.push(g); } });
+      if (covers.length) reasons.push(`Strong in your gap${covers.length > 1 ? "s" : ""}: ` + covers.map((g) => COMP_BY_ID[g].name).join(", "));
+      if (goalMove && m.moves.includes(goalMove)) { score += 2; reasons.push("Has made the move you want: " + MOVES.find((x) => x.id === goalMove).name); }
+      const s = slots[m.id] || 0;
+      if (s > 0) score += 0.5; else reasons.push("No open slots this month");
+      return { mentor_id: m.id, score, covers, reasons, open_slots: s };
+    }).sort((a, b) => b.score - a.score || a.mentor_id - b.mentor_id);
+  }
+
+  // ---------------------------------------------------------------- data helpers
+  function createUser(db, email, name, role, password, createdAt) {
+    const id = nextId(db, "users");
+    db.users.push({ id, email: email.trim().toLowerCase(), name: name.trim(), role, pw: pw(password), created_at: createdAt || now() });
+    if (role === "mentee") db.mentee[id] = { user_id: id, headline: "", years_exp: 0, current_company: "", goal: "", goal_move: "", target_profile: "global", context: "" };
+    else db.mentor[id] = { user_id: id, headline: "", bio: "", years_exp: 0, strengths: [], moves: [], monthly_capacity: 2, availability: "", illustrative: false };
+    return id;
+  }
+  function saveCheckin(db, uid, answers, topGap, ts) {
+    const r = readCheckin(answers, topGap); const id = nextId(db, "checkins");
+    db.checkins.push({ id, user_id: uid, answers, ...r, created_at: ts || now() }); return { id, ...r };
+  }
+  function saveAssessment(db, uid, target, answers, ts) {
+    const result = assess(target, answers); ts = ts || now();
+    const aid = nextId(db, "assessments");
+    db.assessments.push({ id: aid, user_id: uid, target_profile: target, answers, result, coach_note: null, created_at: ts });
+    db.plans.forEach((p) => { if (p.user_id === uid) p.active = false; });
+    const pid = nextId(db, "plans");
+    db.plans.push({ id: pid, user_id: uid, assessment_id: aid, active: true, created_at: ts });
+    buildPlan(result.top_gaps).forEach((t) => db.tasks.push({ id: nextId(db, "tasks"), plan_id: pid, ...t, done_at: null, note: "" }));
+    return { aid, pid, result };
+  }
+  const userById = (db, id) => db.users.find((u) => u.id === id);
+  const pub = (u) => ({ id: u.id, email: u.email, name: u.name, role: u.role });
+  const mentorDict = (db, id) => { const u = userById(db, id), m = db.mentor[id]; return { id, name: u.name, email: u.email, headline: m.headline, bio: m.bio, why: m.why || "", years_exp: m.years_exp, strengths: m.strengths, moves: m.moves, monthly_capacity: m.monthly_capacity, availability: m.availability, illustrative: !!m.illustrative }; };
+  const allMentors = (db) => db.users.filter((u) => u.role === "mentor").sort((a, b) => a.name.localeCompare(b.name)).map((u) => mentorDict(db, u.id));
+  function openSlots(db) {
+    const cutoff = Date.now() - 30 * 86400000, used = {};
+    db.requests.forEach((r) => { if (["accepted", "completed"].includes(r.status) && Date.parse(r.updated_at) >= cutoff) used[r.mentor_id] = (used[r.mentor_id] || 0) + 1; });
+    return Object.fromEntries(allMentors(db).map((m) => [m.id, Math.max(0, m.monthly_capacity - (used[m.id] || 0))]));
+  }
+  const byNewest = (a, b) => b.created_at.localeCompare(a.created_at) || b.id - a.id;
+  const latestAssessment = (db, uid) => db.assessments.filter((a) => a.user_id === uid).sort(byNewest)[0] || null;
+  function activePlan(db, uid) {
+    const p = db.plans.filter((x) => x.user_id === uid && x.active).sort((a, b) => b.id - a.id)[0];
+    if (!p) return null;
+    const tasks = db.tasks.filter((t) => t.plan_id === p.id).sort((a, b) => a.week - b.week).map((t) => ({ ...t, done: !!t.done_at }));
+    const days = Math.floor((Date.now() - Date.parse(p.created_at)) / 86400000);
+    const current_week = Math.min(12, Math.max(1, Math.floor(days / 7) + 1));
+    const done = tasks.filter((t) => t.done).length, expected = tasks.filter((t) => t.week < current_week).length;
+    return { id: p.id, assessment_id: p.assessment_id, created_at: p.created_at, current_week, day: Math.min(90, days + 1), tasks,
+      progress: { done, total: tasks.length, expected_by_now: expected, status: done >= expected ? "on track" : `${expected - done} behind` } };
+  }
+
+  const WHY = {"anita": "Nobody told me what a Head of Product actually does differently. I want to make that jump less of a guessing game.", "vikram": "The best PMs I've worked with were the ones who asked engineers for honest feedback early. I'm happy to be that voice.", "meera": "I sit on promotion panels and see good people miss out for reasons no one explains to them. I'd rather explain it first.", "rahul": "Two years ago I was stuck at the same step. A few direct conversations changed how I built my case.", "divya": "Product managers who stay close to customers make better calls. I like helping them build that habit.", "sanjay": "A clean experiment settles debates faster than any meeting. I enjoy teaching PMs to design one.", "kavya": "Most PMs never see their product's P&L. Once they do, their roadmap conversations change.", "farah": "I took a two-year break and came back as a CPO. I want people to know a non-linear path can still go up."};
+  // ---------------------------------------------------------------- seed (mirrors nextmove/db.py)
+  function seed() {
+    const db = { seq: {}, users: [], session: null, mentee: {}, mentor: {}, checkins: [], assessments: [], plans: [], tasks: [], requests: [], goals: [] };
+    const M = [
+      ["anita@careergym.test", "Anita Rao", "Head of Product, Series B SaaS", 16, "Built a product org from 3 to 25 PMs. Moved from Senior PM to Head of Product in four years.", ["strategy", "people", "stakeholder"], ["pm_to_lead", "big_to_startup"], 3, "Weekday evenings IST"],
+      ["vikram@careergym.test", "Vikram Kulkarni", "Senior Engineering Manager, B2B platform", 14, "Has shipped 30+ launches with PM partners. Good at honest launch post-mortems.", ["execution", "communication"], ["eng_to_pm"], 2, "Tue and Thu mornings"],
+      ["meera@careergym.test", "Meera Sharma", "VP Product, enterprise software", 20, "Sits on promotion panels for Group PM and Director. Coaches on executive presence.", ["stakeholder", "communication", "strategy"], ["pm_to_lead", "pm_to_gpm"], 2, "Fridays"],
+      ["rahul@careergym.test", "Rahul Nair", "Group PM, customer-support SaaS", 12, "Made the jump from PM to Group PM two years ago. Leads four PMs.", ["people", "execution", "customer"], ["pm_to_gpm", "pm_to_lead"], 3, "Weekends"],
+      ["divya@careergym.test", "Divya Lakshmi", "Director of Customer Success", 13, "Runs voice-of-customer programs and advisory boards.", ["customer", "communication"], ["startup_to_big"], 2, "Mon and Wed afternoons"],
+      ["sanjay@careergym.test", "Sanjay Pillai", "Analytics Lead, consumer fintech", 11, "Designs experimentation programs and metric trees for product teams.", ["data", "business"], ["eng_to_pm"], 2, "Weekday lunch"],
+      ["kavya@careergym.test", "Kavya Thomas", "Product Finance Partner", 15, "Owns product-line P&Ls and pricing reviews.", ["business", "data", "strategy"], ["big_to_startup"], 1, "First week of each month"],
+      ["farah@careergym.test", "Farah Iqbal", "Chief Product Officer, seed-stage startup", 18, "Second-time CPO. Came back after a two-year break and moved from a large company to a startup.", ["strategy", "business", "people", "customer"], ["pm_to_lead", "big_to_startup", "restart"], 1, "By request"],
+    ];
+    const ids = {};
+    M.forEach(([email, name, headline, yrs, bio, strengths, moves, cap, avail]) => {
+      const id = createUser(db, email, name, "mentor", "cg-" + Math.random().toString(36).slice(2), now(-90));
+      Object.assign(db.mentor[id], { headline, bio, years_exp: yrs, strengths, moves, monthly_capacity: cap, availability: avail, illustrative: true, why: WHY[email.split("@")[0]] || "" });
+      ids[email] = id;
+    });
+    seedMember(db, ids);
+    return db;
+  }
+
+  function seedMember(db, ids) {
+    const k = createUser(db, "karteek@careergym.in", "Karteek Reddy", "mentee", "CareerGym2026", now(-75));
+    Object.assign(db.mentee[k], { headline: "Senior Product Manager", years_exp: 12, current_company: "B2B SaaS company, 3.5 years",
+      goal: "Head of Product in 3 to 5 years", goal_move: "pm_to_lead", target_profile: "global",
+      context: "Rated a top performer two cycles running but not promoted. Squeezed between leadership and the team." });
+    const day = (d) => now(d).slice(0, 10);
+    const earlier = {
+      strategy: "I own the ticketing workflow roadmap.",
+      execution: "I drove the launch of a new SLA management module with engineering, design and QA. We had a dependency that slipped, so I escalated and we shipped on the revised plan.",
+      stakeholder: "Sales wanted a custom feature and I said no.",
+      people: "I help new PMs when they join.",
+      customer: "I read support tickets every week and talk to customers when I can. Admins struggled with bulk edits.",
+      data: "We tracked activation on a dashboard and ran an A/B test on onboarding that helped.",
+      communication: "I write PRDs for engineers.",
+      business: "Our product is subscription based.",
+    };
+    saveCheckin(db, k, { workload: 2, pressure: 2, energy: 2 }, "people", now(-60));
+    saveAssessment(db, k, "global", earlier, now(-60));
+    saveCheckin(db, k, { workload: 2, pressure: 1, energy: 1 }, "people", now(-31));
+    saveCheckin(db, k, { workload: 1, pressure: 1, energy: 1 }, "people", now(-10));
+    const { pid } = saveAssessment(db, k, "global", C.SAMPLE, now(-24));
+    const mk = (mentor, comp, msg, status, created, updated, note, time) => {
+      const id = nextId(db, "requests");
+      db.requests.push({ id, mentee_id: k, mentor_id: ids[mentor], competency: comp, message: msg, status, mentor_note: note || "", proposed_time: time || "", created_at: now(created), updated_at: now(updated), notes: [] });
+      return db.requests.find((r) => r.id === id);
+    };
+    const asUser = (email) => db.users.find((x) => x.email === email);
+    const me = db.users.find((x) => x.id === k);
+
+    // Session 1: Rahul, people leadership (completed).
+    const r1 = mk("rahul@careergym.test", "people", "Hi Rahul, I'm working on people leadership before a Group PM or Head of Product move. What did you do in the year before your promotion that made the case?",
+      "completed", -22, -15, "Happy to. Bring a list of the PMs you've helped so far.", "Saturday 11:00 IST");
+    const n1 = addNote(db, r1, asUser("rahul@careergym.test"), "Karteek has done a lot of informal coaching but none of it is visible. The promotion case needs named people and outcomes, not 'I help new PMs'. Agreed he'll formalise one mentoring relationship and get into the hiring loop this month.",
+      [{ text: "Ask your manager to formally assign you one junior PM to mentor", competency: "people", due: day(-8) },
+       { text: "Join the PM interview loop and write structured feedback for every candidate", competency: "people", due: day(6) },
+       { text: "Keep a running doc of coaching moments and outcomes for your promotion case", competency: "people", due: day(20) }], now(-15));
+    addNote(db, r1, me, "Biggest takeaway: my leadership work is invisible because I never write it down. Starting the coaching log today.", [], now(-15));
+    addGoal(db, k, { text: n1.actions[0].text, competency: "people", due: n1.actions[0].due, status: "done", source_request_id: r1.id, source_action_id: n1.actions[0].id }, now(-14));
+    addGoal(db, k, { text: n1.actions[1].text, competency: "people", due: n1.actions[1].due, status: "in_progress", source_request_id: r1.id, source_action_id: n1.actions[1].id }, now(-14));
+    addGoal(db, k, { text: n1.actions[2].text, competency: "people", due: n1.actions[2].due, status: "in_progress", source_request_id: r1.id, source_action_id: n1.actions[2].id }, now(-14));
+
+    // Session 2: Anita, product strategy (completed).
+    const r2 = mk("anita@careergym.test", "strategy", "Hi Anita, could I walk you through my one-page strategy draft and hear what's missing at the Head of Product level?",
+      "completed", -12, -6, "Send the draft two days before so I can mark it up.", "Thursday 19:30 IST");
+    const n2 = addNote(db, r2, asUser("anita@careergym.test"), "Draft is a good roadmap but not yet a strategy. It says what to build, not where to play or what to stop. Rewrite around two bets and one explicit 'not doing' list, then pre-read it with the VP before the planning offsite.",
+      [{ text: "Rewrite the strategy around two bets and an explicit 'stop doing' list", competency: "strategy", due: day(4) },
+       { text: "Review the rewrite 1:1 with your VP before the planning offsite", competency: "stakeholder", due: day(12) }], now(-6));
+    addGoal(db, k, { text: n2.actions[0].text, competency: "strategy", due: n2.actions[0].due, status: "in_progress", source_request_id: r2.id, source_action_id: n2.actions[0].id }, now(-5));
+
+    // Own goal, not from a session.
+    addGoal(db, k, { text: "Send a monthly product update to leadership in a fixed format", competency: "communication", due: day(9), status: "not_started" }, now(-4));
+
+    // Session 3: Meera, communication (accepted, upcoming).
+    mk("meera@careergym.test", "communication", "Hi Meera, you read a lot of product updates. When you read mine, what would you skip and what would you want more of?",
+      "accepted", -3, -2, "Bring your last two leadership updates.", "Friday 16:00 IST");
+
+    // Plan progress: weeks 1 to 3 done.
+    db.tasks.forEach((t) => { if (t.plan_id === pid && t.week <= 3) t.done_at = now(-24 + 7 * t.week); });
+  }
+
+  // ---------------------------------------------------------------- routes
+  const need = (b, ...ks) => ks.forEach((k) => { if (b[k] === undefined || b[k] === null || b[k] === "") throw new ApiError(400, `'${k}' is required`); });
+  function me(db, u) {
+    if (!u) return { user: null };
+    return { user: pub(u), profile: u.role === "mentee" ? { ...db.mentee[u.id] } : { ...mentorDict(db, u.id), open_slots: openSlots(db)[u.id] || 0 } };
+  }
+  function login(db, uid) { db.session = uid; return me(db, userById(db, uid)); }
+
+  const R = [];
+  const on = (method, pattern, fn, opts = {}) => R.push({ method, rx: new RegExp("^" + pattern + "$"), fn, auth: opts.auth !== false, role: opts.role });
+
+  on("POST", "/api/signup", (db, u, b) => {
+    need(b, "email", "password", "name", "role");
+    if (!["mentee", "mentor"].includes(b.role)) throw new ApiError(400, "role must be mentee or mentor");
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(b.email.trim())) throw new ApiError(400, "Enter a valid email");
+    if (b.password.length < 8) throw new ApiError(400, "Password must be at least 8 characters");
+    if (db.users.some((x) => x.email === b.email.trim().toLowerCase())) throw new ApiError(409, "An account with that email already exists");
+    return login(db, createUser(db, b.email, b.name, b.role, b.password));
+  }, { auth: false });
+  on("POST", "/api/login", (db, u, b) => {
+    need(b, "email", "password");
+    const x = db.users.find((y) => y.email === b.email.trim().toLowerCase());
+    if (!x || x.pw !== pw(b.password)) throw new ApiError(401, "Email or password is incorrect");
+    return login(db, x.id);
+  }, { auth: false });
+  on("POST", "/api/logout", (db) => { db.session = null; return { ok: true }; }, { auth: false });
+  on("GET", "/api/me", (db, u) => me(db, u), { auth: false });
+  on("GET", "/api/meta", () => ({
+    levels: C.LEVELS, competencies: C.COMPS.map((c) => ({ id: c.id, name: c.name, q: c.q, action: c.action, groups: c.groups.map((g) => g.label) })),
+    profiles: C.PROFILES, checkin: C.CHECKIN, moves: MOVES, who: C.WHO, paths: C.PATHS, sample_answers: C.SAMPLE, testimonials: (window.CG_TESTIMONIALS || []).filter((t) => t.quote), llm_enabled: false,
+  }), { auth: false });
+
+  on("PUT", "/api/profile", (db, u, b) => {
+    if (b.name && String(b.name).trim()) u.name = String(b.name).trim();
+    if (u.role === "mentee") {
+      if (b.goal_move && !MOVE_IDS.has(b.goal_move)) throw new ApiError(400, "Unknown career move");
+      if (b.target_profile && !PROFILE_BY_ID[b.target_profile]) throw new ApiError(400, "Unknown target profile");
+      const p = db.mentee[u.id];
+      ["headline", "current_company", "goal", "goal_move", "target_profile", "context"].forEach((k) => { if (k in b) p[k] = String(b[k]); });
+      if ("years_exp" in b) p.years_exp = parseInt(b.years_exp, 10) || 0;
+    } else {
+      (b.strengths || []).forEach((s) => { if (!COMP_BY_ID[s]) throw new ApiError(400, `Unknown competency ${s}`); });
+      (b.moves || []).forEach((m) => { if (!MOVE_IDS.has(m)) throw new ApiError(400, `Unknown career move ${m}`); });
+      const p = db.mentor[u.id];
+      ["headline", "bio", "why", "availability"].forEach((k) => { if (k in b) p[k] = String(b[k]); });
+      ["years_exp", "monthly_capacity"].forEach((k) => { if (k in b) p[k] = parseInt(b[k], 10) || 0; });
+      ["strengths", "moves"].forEach((k) => { if (Array.isArray(b[k])) p[k] = b[k]; });
+    }
+    return me(db, u);
+  });
+
+  on("POST", "/api/checkins", (db, u, b) => {
+    const la = latestAssessment(db, u.id);
+    const answers = Object.fromEntries(Object.entries(b.answers || {}).map(([k, v]) => [k, parseInt(v, 10)]));
+    const r = saveCheckin(db, u.id, answers, la && la.result.top_gaps[0]);
+    return r;
+  }, { role: "mentee" });
+  on("GET", "/api/checkins", (db, u) => ({ checkins: db.checkins.filter((c) => c.user_id === u.id).sort(byNewest) }), { role: "mentee" });
+
+  on("POST", "/api/assessments", (db, u, b) => {
+    need(b, "target_profile");
+    const answers = Object.fromEntries(Object.entries(b.answers || {}).filter(([k]) => COMP_BY_ID[k]).map(([k, v]) => [k, String(v).slice(0, 5000)]));
+    const { aid, pid, result } = saveAssessment(db, u.id, b.target_profile, answers);
+    db.mentee[u.id].target_profile = b.target_profile;
+    return { id: aid, plan_id: pid, result };
+  }, { role: "mentee" });
+  on("GET", "/api/assessments", (db, u) => ({ assessments: db.assessments.filter((a) => a.user_id === u.id).sort(byNewest).map(({ answers, ...rest }) => rest) }), { role: "mentee" });
+  const ownA = (db, u, id) => { const a = db.assessments.find((x) => x.id === +id && x.user_id === u.id); if (!a) throw new ApiError(404, "Assessment not found"); return a; };
+  on("GET", "/api/assessments/(\\d+)", (db, u, b, id) => ({ ...ownA(db, u, id) }), { role: "mentee" });
+  on("POST", "/api/assessments/(\\d+)/coach", () => { throw new ApiError(400, "The AI coach isn't available yet."); }, { role: "mentee" });
+
+  on("GET", "/api/plan", (db, u) => ({ plan: activePlan(db, u.id) }), { role: "mentee" });
+  on("PATCH", "/api/plan/tasks/(\\d+)", (db, u, b, id) => {
+    const t = db.tasks.find((x) => x.id === +id); const p = t && db.plans.find((x) => x.id === t.plan_id);
+    if (!t || p.user_id !== u.id) throw new ApiError(404, "Task not found");
+    if ("done" in b) t.done_at = b.done ? now() : null;
+    if ("note" in b) t.note = String(b.note).slice(0, 2000);
+    return { plan: activePlan(db, u.id) };
+  }, { role: "mentee" });
+
+  on("GET", "/api/mentors", (db) => { const s = openSlots(db); return { mentors: allMentors(db).map((m) => ({ ...m, open_slots: s[m.id] })) }; });
+  on("GET", "/api/matches", (db, u) => {
+    const la = latestAssessment(db, u.id), ms = allMentors(db), byId = Object.fromEntries(ms.map((m) => [m.id, m]));
+    const ranked = matchMentors(ms, la ? la.result.rows : [], la ? la.result.top_gaps : [], db.mentee[u.id].goal_move, openSlots(db));
+    const open = {}; db.requests.forEach((r) => { if (r.mentee_id === u.id && ["pending", "accepted"].includes(r.status)) open[r.mentor_id] = r.status; });
+    const gaps = la ? la.result.top_gaps : [], size = Object.fromEntries((la ? la.result.rows : []).map((r) => [r.id, r.gap]));
+    const max_score = gaps.reduce((a, g) => a + 3 * Math.max(1, size[g] || 1), 0) + (gaps.length ? 1 : 0) + (db.mentee[u.id].goal_move ? 2 : 0) + 0.5;
+    return { assessment_id: la ? la.id : null, top_gaps: gaps, max_score, matches: ranked.map((x) => ({ ...x, mentor: byId[x.mentor_id], request_status: open[x.mentor_id] || null })) };
+  }, { role: "mentee" });
+
+  on("POST", "/api/requests", (db, u, b) => {
+    need(b, "mentor_id", "message");
+    const mid = +b.mentor_id, m = userById(db, mid);
+    if (!m || m.role !== "mentor") throw new ApiError(404, "Mentor not found");
+    const comp = b.competency || null;
+    if (comp && !COMP_BY_ID[comp]) throw new ApiError(400, "Unknown competency");
+    if (db.requests.some((r) => r.mentee_id === u.id && r.mentor_id === mid && ["pending", "accepted"].includes(r.status))) throw new ApiError(409, "You already have an open request with this mentor");
+    const ts = now(), id = nextId(db, "requests");
+    db.requests.push({ id, mentee_id: u.id, mentor_id: mid, competency: comp, message: String(b.message).slice(0, 2000), status: "pending", mentor_note: "", proposed_time: "", created_at: ts, updated_at: ts });
+    return { id, status: "pending" };
+  }, { role: "mentee" });
+  on("GET", "/api/requests", (db, u) => {
+    const mine = db.requests.filter((r) => (u.role === "mentee" ? r.mentee_id : r.mentor_id) === u.id);
+    const out = mine.map((r) => {
+      const otherId = u.role === "mentee" ? r.mentor_id : r.mentee_id, o = userById(db, otherId);
+      const d = { ...r, other_name: o.name, notes: (r.notes || []).map((n) => ({ ...n, author_name: userById(db, n.author_id).name })) };
+      if (u.role === "mentee") d.other_headline = db.mentor[otherId].headline;
+      else {
+        const mp = db.mentee[otherId]; Object.assign(d, { other_headline: mp.headline, mentee_goal: mp.goal, mentee_years: mp.years_exp });
+        const la = latestAssessment(db, otherId); if (la) d.mentee_gaps = la.result.rows.filter((x) => la.result.top_gaps.includes(x.id));
+      }
+      return d;
+    });
+    out.sort((a, b) => (u.role === "mentor" ? (a.status === "pending" ? 0 : 1) - (b.status === "pending" ? 0 : 1) : 0) || b.updated_at.localeCompare(a.updated_at));
+    return { requests: out };
+  });
+  on("POST", "/api/requests/(\\d+)/(accept|decline|complete|cancel)", (db, u, b, id, action) => {
+    const r = db.requests.find((x) => x.id === +id);
+    if (!r) throw new ApiError(404, "Request not found");
+    const allowed = {
+      accept: u.role === "mentor" && r.mentor_id === u.id && r.status === "pending",
+      decline: u.role === "mentor" && r.mentor_id === u.id && r.status === "pending",
+      complete: [r.mentor_id, r.mentee_id].includes(u.id) && r.status === "accepted",
+      cancel: u.role === "mentee" && r.mentee_id === u.id && ["pending", "accepted"].includes(r.status),
+    }[action];
+    if (!allowed) {
+      const party = { accept: [r.mentor_id], decline: [r.mentor_id], cancel: [r.mentee_id], complete: [r.mentor_id, r.mentee_id] }[action];
+      throw new ApiError(party.includes(u.id) ? 409 : 403, `Can't ${action} a request that is ${r.status}`);
+    }
+    if (action === "accept" && (openSlots(db)[u.id] || 0) <= 0) throw new ApiError(409, "You have no open slots left this month. Raise your monthly capacity first.");
+    r.status = { accept: "accepted", decline: "declined", complete: "completed", cancel: "cancelled" }[action];
+    if ("note" in b) r.mentor_note = String(b.note).slice(0, 2000);
+    if ("proposed_time" in b) r.proposed_time = String(b.proposed_time).slice(0, 200);
+    r.updated_at = now();
+    if (action === "complete" && r.competency) {
+      const plan = db.plans.find((p) => p.user_id === r.mentee_id && p.active);
+      if (plan) db.tasks.forEach((t) => { if (t.plan_id === plan.id && t.talk && t.competency === r.competency && !t.done_at) t.done_at = now(); });
+    }
+    return { id: r.id, status: r.status };
+  });
+
+  const GOAL_STATUS = ["not_started", "in_progress", "done"];
+  function addNote(db, r, u, text, actions, ts) {
+    const note = { id: nextId(db, "notes"), author_id: u.id, author_role: u.role, text: String(text || "").slice(0, 4000), created_at: ts || now(),
+      actions: (actions || []).filter((a) => a && String(a.text || "").trim()).slice(0, 10).map((a) => ({
+        id: nextId(db, "actions"), text: String(a.text).trim().slice(0, 500),
+        competency: COMP_BY_ID[a.competency] ? a.competency : (r.competency || null), due: /^\d{4}-\d{2}-\d{2}$/.test(a.due || "") ? a.due : "", goal_id: null })) };
+    if (!note.text.trim() && !note.actions.length) throw new ApiError(400, "Add a note or at least one action item");
+    (r.notes = r.notes || []).push(note);
+    r.updated_at = r.updated_at > note.created_at ? r.updated_at : note.created_at;
+    return note;
+  }
+  function addGoal(db, menteeId, g, ts) {
+    const text = String(g.text || "").trim();
+    if (!text) throw new ApiError(400, "Describe the goal");
+    const comp = COMP_BY_ID[g.competency] ? g.competency : null;
+    const goal = { id: nextId(db, "goals"), user_id: menteeId, text: text.slice(0, 500), competency: comp,
+      due: /^\d{4}-\d{2}-\d{2}$/.test(g.due || "") ? g.due : "", status: GOAL_STATUS.includes(g.status) ? g.status : "not_started",
+      source_request_id: g.source_request_id || null, source_action_id: g.source_action_id || null, created_at: ts || now(), done_at: g.status === "done" ? (ts || now()) : null };
+    db.goals.push(goal);
+    if (goal.source_action_id) db.requests.forEach((r) => (r.notes || []).forEach((n) => n.actions.forEach((a) => { if (a.id === goal.source_action_id) a.goal_id = goal.id; })));
+    return goal;
+  }
+  function goalView(db, g) {
+    const r = g.source_request_id ? db.requests.find((x) => x.id === g.source_request_id) : null;
+    return { ...g, source: r ? { request_id: r.id, mentor_name: userById(db, r.mentor_id).name, date: r.updated_at, topic: r.competency } : null };
+  }
+
+  on("POST", "/api/requests/(\\d+)/notes", (db, u, b, id) => {
+    const r = db.requests.find((x) => x.id === +id);
+    if (!r || ![r.mentor_id, r.mentee_id].includes(u.id)) throw new ApiError(404, "Session not found");
+    if (!["accepted", "completed"].includes(r.status)) throw new ApiError(409, "Notes can be added once a session is booked");
+    return addNote(db, r, u, b.text, b.actions);
+  });
+  on("GET", "/api/goals", (db, u) => ({ goals: db.goals.filter((g) => g.user_id === u.id).sort((a, b) => (a.status === "done") - (b.status === "done") || (a.due || "9999").localeCompare(b.due || "9999") || a.id - b.id).map((g) => goalView(db, g)) }), { role: "mentee" });
+  on("POST", "/api/goals", (db, u, b) => {
+    if (b.source_action_id && db.goals.some((g) => g.user_id === u.id && g.source_action_id === +b.source_action_id)) throw new ApiError(409, "That action item is already a goal");
+    if (b.source_request_id) { const r = db.requests.find((x) => x.id === +b.source_request_id); if (!r || r.mentee_id !== u.id) throw new ApiError(404, "Session not found"); }
+    return goalView(db, addGoal(db, u.id, { ...b, source_request_id: b.source_request_id ? +b.source_request_id : null, source_action_id: b.source_action_id ? +b.source_action_id : null }));
+  }, { role: "mentee" });
+  on("PATCH", "/api/goals/(\\d+)", (db, u, b, id) => {
+    const g = db.goals.find((x) => x.id === +id && x.user_id === u.id);
+    if (!g) throw new ApiError(404, "Goal not found");
+    if ("status" in b) { if (!GOAL_STATUS.includes(b.status)) throw new ApiError(400, "Unknown status"); g.status = b.status; g.done_at = b.status === "done" ? now() : null; }
+    if ("due" in b) g.due = /^\d{4}-\d{2}-\d{2}$/.test(b.due || "") ? b.due : "";
+    if ("text" in b && String(b.text).trim()) g.text = String(b.text).trim().slice(0, 500);
+    return goalView(db, g);
+  }, { role: "mentee" });
+
+  on("GET", "/api/dashboard", (db, u) => {
+    const checkins = db.checkins.filter((c) => c.user_id === u.id).sort(byNewest).slice(0, 8);
+    const history = db.assessments.filter((a) => a.user_id === u.id).sort((a, b) => a.created_at.localeCompare(b.created_at) || a.id - b.id)
+      .map((a) => ({ id: a.id, created_at: a.created_at, target_profile: a.target_profile, ...a.result.summary }));
+    const reqs = {}; db.requests.forEach((r) => { if (r.mentee_id === u.id) reqs[r.status] = (reqs[r.status] || 0) + 1; });
+    return { profile: { ...db.mentee[u.id] }, latest_checkin: checkins[0] || null, checkins, latest_assessment: latestAssessment(db, u.id),
+      assessment_history: history, plan: activePlan(db, u.id), requests: reqs,
+      goals: { total: db.goals.filter((g) => g.user_id === u.id).length, done: db.goals.filter((g) => g.user_id === u.id && g.status === "done").length,
+        in_progress: db.goals.filter((g) => g.user_id === u.id && g.status === "in_progress").length } };
+  }, { role: "mentee" });
+
+  async function handle(method, path, body) {
+    const db = load();
+    const u = db.session ? userById(db, db.session) : null;
+    for (const r of R) {
+      const m = path.match(r.rx);
+      if (m && r.method === method) {
+        if (r.auth && !u) throw new ApiError(401, "Please log in");
+        if (r.role && u.role !== r.role) throw new ApiError(403, `Only ${r.role}s can do this`);
+        const snapshot = JSON.stringify(db);
+        try { const out = r.fn(db, u, body || {}, ...m.slice(1)); save(); return JSON.parse(JSON.stringify(out)); }
+        catch (e) { mem = JSON.parse(snapshot); throw e; }
+      }
+    }
+    throw new ApiError(404, "Not found");
+  }
+
+  window.CG_LOCAL = { handle };
+})();
+
+</script>
+<script>
+/* CareerGym web app. Vanilla JS, hash routes, talks to the JSON API under /api. */
+"use strict";
+
+const S = { me: null, profile: null, meta: null };
+const $ = (sel, el = document) => el.querySelector(sel);
+const $$ = (sel, el = document) => [...el.querySelectorAll(sel)];
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const view = () => $("#view");
+
+async function api(method, path, body) {
+  if (window.CG_LOCAL) { // browser build: the API runs in this page
+    try { return await window.CG_LOCAL.handle(method, path, body); }
+    catch (e) { if (!e.status) console.error(e); const err = new Error(e.status ? e.message : "Something went wrong"); err.status = e.status || 500; throw err; }
+  }
+  const opt = { method, headers: {}, credentials: "same-origin" };
+  if (body !== undefined) { opt.headers["Content-Type"] = "application/json"; opt.body = JSON.stringify(body); }
+  const res = await fetch(path, opt);
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) { const e = new Error(data.error || `Request failed (${res.status})`); e.status = res.status; throw e; }
+  return data;
+}
+
+const comp = (id) => S.meta.competencies.find((c) => c.id === id);
+const compName = (id) => (comp(id) || { name: id || "General" }).name;
+const moveName = (id) => (S.meta.moves.find((m) => m.id === id) || { name: "" }).name;
+const profName = (id) => (S.meta.profiles.find((p) => p.id === id) || { name: id }).name;
+const initials = (n) => n.split(/\s+/).map((w) => w[0]).join("").slice(0, 2).toUpperCase();
+const fmtDate = (iso) => new Date(iso).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });
+const LEVEL_PILL = { High: "gap2", Some: "gap1", Low: "ok" };
+
+// ---------------------------------------------------------------- shell
+const MENTEE_NAV = [["#home", "Home"], ["#checkin", "Check-in"], ["#assess", "Assessment"], ["#path", "Path"], ["#mentors", "Mentors"], ["#plan", "Plan"], ["#sessions", "Sessions"], ["#goals", "Goals"], ["#profile", "Profile"]];
+const MENTOR_NAV = [["#inbox", "Requests"], ["#mentor-profile", "My mentor profile"]];
+
+function renderTopbar() {
+  const nav = !S.me ? [] : S.me.role === "mentee" ? MENTEE_NAV : MENTOR_NAV;
+  const cur = "#" + location.hash.replace(/^#\/?/, "").replace(/-\d+$/, "");
+  $("#topbar").innerHTML = `
+    <a class="brand" href="#">${LOGO}<span>CareerGym</span></a>
+    ${nav.length ? `<nav class="tabs" aria-label="Main">${nav.map(([h, l]) => `<a href="${h}" ${cur === h ? 'aria-current="page"' : ""}>${l}</a>`).join("")}</nav>` : ""}
+    ${S.me ? `<div class="who-am-i"><span>${esc(S.me.name)}</span><button class="linkbtn" id="logout">Log out</button></div>` : ""}`;
+  const lo = $("#logout");
+  if (lo) lo.onclick = async () => { await api("POST", "/api/logout"); S.me = null; location.hash = "#"; };
+}
+
+async function refreshMe() {
+  const r = await api("GET", "/api/me");
+  S.me = r.user; S.profile = r.profile || null;
+}
+
+const ROUTES = {
+  "": landing, login, signup, "join-mentor": joinMentor, home, path, goals, checkin, assess, results, mentors, plan, sessions, profile, inbox, "mentor-profile": mentorProfile,
+};
+
+async function router() {
+  const h = location.hash.replace(/^#\/?/, "");
+  const mm = h.match(/^(.*?)-(\d+)$/);
+  const name = mm ? mm[1] : h.split("/")[0], arg = mm ? mm[2] : h.split("/")[1];
+  const PUBLIC = ["", "login", "signup", "join-mentor"];
+  if (!S.me && !PUBLIC.includes(name)) { location.hash = "#login"; return; }
+  if (S.me && PUBLIC.includes(name)) { location.hash = S.me.role === "mentee" ? "#home" : "#inbox"; return; }
+  document.body.classList.toggle("public", !S.me);
+  if (S.me) renderTopbar();
+  const fn = ROUTES[name];
+  if (!fn) { view().innerHTML = `<p class="empty">Page not found. <a href="#">Go home</a></p>`; return; }
+  try { await fn(arg); window.scrollTo(0, 0); }
+  catch (e) {
+    if (e.status === 401) { S.me = null; location.hash = "#"; return; }
+    view().innerHTML = `<p class="empty">${esc(e.message)}</p>`;
+  }
+}
+
+// ---------------------------------------------------------------- marketing site and auth
+const LOGO = `<svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="var(--accent)"/><rect x="8" y="17" width="4" height="7" rx="1.5" fill="var(--on-accent)"/><rect x="14" y="12" width="4" height="12" rx="1.5" fill="var(--on-accent)"/><rect x="20" y="7" width="4" height="17" rx="1.5" fill="var(--on-accent)"/></svg>`;
+const MK_LINKS = [["how", "How it works"], ["assessment", "Assessment"], ["mentors-sec", "For mentors"], ["pricing", "Pricing"], ["faq", "FAQ"]];
+
+function scrollToSection(id) {
+  const go = () => { const el = document.getElementById(id); if (el) el.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" }); };
+  if (location.hash.replace(/^#\/?/, "") !== "") { location.hash = "#"; setTimeout(go, 80); } else go();
+}
+
+function renderPublicTopbar() {
+  $("#topbar").innerHTML = `
+    <a class="brand" href="#">${LOGO}<span>CareerGym</span></a>
+    <nav class="mk-nav" aria-label="Site">${MK_LINKS.map(([id, l]) => `<button type="button" data-scroll="${id}">${l}</button>`).join("")}</nav>
+    <div class="mk-auth"><a class="mk-login" href="#login">Log in</a><a class="btn sm" href="#signup">Get started</a></div>`;
+  $$("[data-scroll]").forEach((b) => (b.onclick = () => scrollToSection(b.dataset.scroll)));
+}
+
+function previewCard() {
+  const rows = [["Product strategy", 3, 4], ["Stakeholder influence", 3, 4], ["People leadership", 1, 4], ["Customer insight", 4, 3], ["Communication", 2, 4]];
+  return `<div class="preview" aria-hidden="true">
+    <div class="pv-head"><span class="eyebrow">Gap view</span><span class="pill gap2">Target: Head of Product</span></div>
+    ${rows.map(([n, c, t]) => `<div class="pv-row"><span>${n}</span><div class="bar"><i style="width:${c * 25}%"></i><u style="left:calc(${t * 25}% - 1px)"></u></div><b class="${t - c >= 2 ? "bad" : t > c ? "warn" : "good"}">${t > c ? `${t - c} below` : "At target"}</b></div>`).join("")}
+    <div class="pv-match"><span class="mini">AR</span><div><strong>Matched mentor</strong><span>Head of Product · strong in your top two gaps</span></div><span class="pv-cta">Request</span></div>
+  </div>`;
+}
+
+async function landing() {
+  renderPublicTopbar();
+  view().innerHTML = `
+  <section class="mk-hero">
+    <div class="mk-hero-copy">
+      <span class="kicker">Career growth for mid-career professionals</span>
+      <h1>Get assessed. Train. <span class="hl">Level up.</span></h1>
+      <p class="lede">CareerGym shows you exactly where you stand against the role you want, matches you with mentors who are strong where you're not, and turns it into a 90-day plan you can fit into a busy week.</p>
+      <div class="actions"><a class="btn lg" href="#signup">Start your free assessment</a><a class="btn ghost lg" href="#join-mentor">Become a mentor</a></div>
+      <p class="fine">Free to start. Takes about 15 minutes.</p>
+    </div>
+    ${previewCard()}
+  </section>
+
+  <section class="mk-band">
+    <div class="mk-pains">
+      <div><h3>No time to think</h3><p>Your week goes to firefighting. Your career plan keeps sliding to next quarter.</p></div>
+      <div><h3>No clear next move</h3><p>You're rated well but not promoted, and nobody tells you what's actually missing.</p></div>
+      <div><h3>No one to ask</h3><p>The people who've made the move you want aren't in your network, or you don't know what to ask them.</p></div>
+    </div>
+  </section>
+
+  ${(S.meta.testimonials || []).length ? `<section class="mk-sec" id="stories">
+    <span class="kicker">From our user interviews</span>
+    <h2>What mid-career professionals told us</h2>
+    <div class="quotes">${testimonialBlock(S.meta.testimonials)}</div>
+  </section>` : ""}
+
+  <section class="mk-sec" id="how">
+    <span class="kicker">How it works</span>
+    <h2>A training plan for your career</h2>
+    <ol class="mk-steps">
+      <li><b>1</b><h3>Check in on your week</h3><p>Three quick questions on workload, pressure and energy. You get a read on whether you're stuck and one small step for this week.</p></li>
+      <li><b>2</b><h3>Get assessed</h3><p>Answer eight leadership interview questions. CareerGym scores each competency from 1 to 4 against the level your target role expects.</p></li>
+      <li><b>3</b><h3>Train with a mentor</h3><p>Get matched with mentors who are strong in your biggest gaps and have made the move you're aiming for. Request a session in one click.</p></li>
+      <li><b>4</b><h3>Level up in 90 days</h3><p>One gap per month, one action per week. Tick off progress, reassess, and watch your scores move.</p></li>
+    </ol>
+  </section>
+
+  <section class="mk-sec mk-split" id="assessment">
+    <div>
+      <span class="kicker">The assessment</span>
+      <h2>Eight competencies. Four levels. One honest picture.</h2>
+      <p>Each answer is scored on the signals hiring panels look for, such as explicit trade-offs, evidence used to persuade, or a concrete metric moved. You see why you got each score and what would raise it.</p>
+      <p>Then pick where you want to lead: a global SaaS company, an early-stage startup, or a Series A or B scale-up. Each sets a different bar.</p>
+    </div>
+    <div class="mk-comps">
+      ${S.meta.competencies.map((c) => `<span>${esc(c.name)}</span>`).join("")}
+      <div class="mk-levels">${[1, 2, 3, 4].map((l) => `<div><b>${l}</b><span>${S.meta.levels[l]}</span></div>`).join("")}</div>
+    </div>
+  </section>
+
+  <section class="mk-sec mk-mentor" id="mentors-sec">
+    <div>
+      <span class="kicker">For mentors</span>
+      <h2>Mentor the people you're best placed to help</h2>
+      <p>Tell us which competencies you're strongest in, the career moves you've made, and how many sessions you can give each month. You only get requests that match.</p>
+      <ul class="ticks">
+        <li>See each mentee's goal and top gaps before you accept</li>
+        <li>Set your own monthly capacity and availability</li>
+        <li>Sessions come with a clear topic and a specific ask</li>
+      </ul>
+      <div class="actions"><a class="btn lg" href="#join-mentor">Join as a mentor</a></div>
+    </div>
+    <div class="mk-req" aria-hidden="true">
+      <div class="mentor-head"><span class="mini">SP</span><div><strong>New session request</strong><br><span class="muted">Senior PM · 11 years · Topic: Stakeholder influence</span></div></div>
+      <p>"What would you need to see from me to trust me with a bigger cross-team call?"</p>
+      <div class="chips"><span class="chip hit">Stakeholder influence 2→4</span><span class="chip hit">Strategy 3→4</span><span class="chip">Data 3→3</span></div>
+      <div class="actions"><span class="btn sm">Accept</span><span class="btn ghost sm">Decline</span></div>
+    </div>
+  </section>
+
+  <section class="mk-sec" id="pricing">
+    <span class="kicker">Pricing</span>
+    <h2>Start free. Upgrade when you're ready to train.</h2>
+    <div class="mk-prices">
+      <div class="price"><h3>Starter</h3><p class="amt">₹0</p><p class="muted">For getting clear on where you stand.</p>
+        <ul class="ticks"><li>Weekly think-time check-ins</li><li>One competency assessment per quarter</li><li>Gap view with next actions</li><li>Mentor matching</li><li>90-day plan</li></ul>
+        <a class="btn ghost" href="#signup">Get started</a></div>
+      <div class="price featured"><span class="tag">Most popular</span><h3>Pro</h3><p class="amt">₹1,499<small>/month</small></p><p class="muted">For an active push toward your next role.</p>
+        <ul class="ticks"><li>Everything in Starter</li><li>Unlimited reassessments</li><li>Two mentor sessions every month</li><li>Progress history across assessments</li><li>Shareable plan summary for mentors</li></ul>
+        <a class="btn" href="#signup">Start Pro</a></div>
+      <div class="price"><h3>Mentors</h3><p class="amt">Free</p><p class="muted">For leaders who want to give back.</p>
+        <ul class="ticks"><li>Matched only to relevant mentees</li><li>Mentee gap view before every session</li><li>Your own monthly capacity</li></ul>
+        <a class="btn ghost" href="#join-mentor">Join as a mentor</a></div>
+    </div>
+  </section>
+
+  <section class="mk-sec" id="faq">
+    <span class="kicker">FAQ</span>
+    <h2>Questions, answered</h2>
+    <div class="faq">
+      <details><summary>Who is CareerGym for?</summary><p>Professionals with roughly 8 to 20 years of experience who feel stuck or are planning their next step up. The first track is built for product managers aiming for Group PM, Head of Product or Director roles.</p></details>
+      <details><summary>How is my assessment scored?</summary><p>Each of the eight answers is checked for four signals that show depth in that competency. More signals means a higher level, from 1 (Emerging) to 4 (Leading). Very short answers are capped at level 2. Every score comes with the reason behind it.</p></details>
+      <details><summary>How are mentors matched to me?</summary><p>Mentors rank higher when they're strong in your biggest gaps, when they've made the career move you're aiming for, and when they have open slots this month. Each match shows you why it was suggested.</p></details>
+      <details><summary>How much time does it take?</summary><p>A check-in takes under a minute and the assessment about 15 minutes. After that, your plan asks for one small action each week.</p></details>
+      <details><summary>What happens in a mentor session?</summary><p>You send a request with a topic tied to one of your gaps and a specific question. The mentor accepts, proposes a time and can leave you a note on what to bring. Completing the session ticks off that week of your plan.</p></details>
+      <details><summary>Can I retake the assessment?</summary><p>Yes. Each new assessment is saved, starts a fresh 90-day plan from your new top gaps, and shows how your scores have moved since last time.</p></details>
+    </div>
+  </section>
+
+  <section class="mk-final">
+    <h2>Your next move starts with knowing where you stand.</h2>
+    <div class="actions"><a class="btn lg inv" href="#signup">Start your free assessment</a></div>
+  </section>
+
+  <footer class="mk-foot">
+    <a class="brand" href="#">${LOGO}<span>CareerGym</span></a>
+    <span class="muted">Get assessed, train, level up.</span>
+    <nav aria-label="Footer">${MK_LINKS.map(([id, l]) => `<button type="button" data-scroll="${id}">${l}</button>`).join("")}</nav>
+    <span class="muted">© 2026 CareerGym</span>
+  </footer>`;
+  $$(".mk-foot [data-scroll]").forEach((b) => (b.onclick = () => scrollToSection(b.dataset.scroll)));
+}
+
+function authDone(r) {
+  S.me = r.user; S.profile = r.profile;
+  if (r.user.role === "mentee") location.hash = r.profile && r.profile.headline ? "#home" : "#profile";
+  else location.hash = r.profile && r.profile.headline ? "#inbox" : "#mentor-profile";
+}
+
+async function login() {
+  renderPublicTopbar();
+  view().innerHTML = `<section class="auth">
+    <div class="auth-card">
+      <h1>Welcome back</h1>
+      <p class="muted">Log in to pick up your plan where you left off.</p>
+      <form class="form" id="login" novalidate>
+        <label class="f" for="login-email">Email<input id="login-email" type="email" name="email" autocomplete="username" required></label>
+        <label class="f" for="login-pw">Password<input id="login-pw" type="password" name="password" autocomplete="current-password" required></label>
+        <div class="err" id="login-err" role="alert"></div>
+        <button class="btn lg block">Log in</button>
+      </form>
+      <p class="muted center">New to CareerGym? <a href="#signup">Create an account</a></p>
+    </div></section>`;
+  $("#login").onsubmit = async (e) => {
+    e.preventDefault(); const f = new FormData(e.target);
+    try { authDone(await api("POST", "/api/login", { email: f.get("email"), password: f.get("password") })); }
+    catch (err) { $("#login-err").textContent = err.message; }
+  };
+}
+
+async function signup(_arg, role = "mentee") {
+  renderPublicTopbar();
+  const mentor = role === "mentor";
+  view().innerHTML = `<section class="auth">
+    <div class="auth-card">
+      <h1>${mentor ? "Become a CareerGym mentor" : "Create your account"}</h1>
+      <p class="muted">${mentor ? "Set up your profile in two minutes and get matched with mentees you can really help." : "Free to start. Your first assessment takes about 15 minutes."}</p>
+      <div class="seg" role="radiogroup" aria-label="Account type">
+        <button type="button" role="radio" aria-checked="${!mentor}" data-role="mentee">I want to grow</button>
+        <button type="button" role="radio" aria-checked="${mentor}" data-role="mentor">I want to mentor</button>
+      </div>
+      <form class="form" id="signup" novalidate>
+        <label class="f" for="su-name">Full name<input id="su-name" type="text" name="name" autocomplete="name" required></label>
+        <label class="f" for="su-email">Work or personal email<input id="su-email" type="email" name="email" autocomplete="email" required></label>
+        <label class="f" for="su-pw">Password<input id="su-pw" type="password" name="password" minlength="8" autocomplete="new-password" required><span class="hint">At least 8 characters</span></label>
+        <div class="err" id="signup-err" role="alert"></div>
+        <button class="btn lg block">${mentor ? "Create mentor account" : "Create account"}</button>
+      </form>
+      <p class="muted center">Already have an account? <a href="#login">Log in</a></p>
+    </div></section>`;
+  $$("[data-role]").forEach((b) => (b.onclick = () => { location.hash = b.dataset.role === "mentor" ? "#join-mentor" : "#signup"; }));
+  $("#signup").onsubmit = async (e) => {
+    e.preventDefault(); const f = Object.fromEntries(new FormData(e.target)); f.role = role;
+    try { authDone(await api("POST", "/api/signup", f)); }
+    catch (err) { $("#signup-err").textContent = err.message; }
+  };
+}
+function joinMentor() { return signup(null, "mentor"); }
+
+// ---------------------------------------------------------------- mentee: home
+async function home() {
+  const d = await api("GET", "/api/dashboard");
+  const p = d.profile, ci = d.latest_checkin, la = d.latest_assessment, plan = d.plan;
+  const thisWeek = plan && plan.tasks.find((t) => t.week === plan.current_week);
+  const firstOpen = plan && plan.tasks.find((t) => !t.done);
+  const hist = d.assessment_history;
+  const first = hist[0], last = hist[hist.length - 1];
+  const reqs = d.requests;
+  view().innerHTML = `
+  <section class="hero">
+    <div class="eyebrow">Your dashboard</div>
+    <h1>Hi ${esc(S.me.name.split(" ")[0])}.</h1>
+    <p class="muted">${esc(p.headline || "Add your role on the Profile page")}${p.years_exp ? ` · ${p.years_exp} years` : ""}${p.goal ? ` · Goal: ${esc(p.goal)}` : ""}</p>
+    ${!la ? `<div class="nextstep"><strong>Start here:</strong> take the <a href="#assess">competency check</a> to see your gaps and get a 90-day plan.</div>` : ""}
+  </section>
+  <div class="grid3">
+    <section class="panel">
+      <div class="row" style="display:flex;justify-content:space-between;align-items:center"><h3>Stuck signal</h3>${ci ? `<span class="pill ${LEVEL_PILL[ci.level]}">${ci.level} (${ci.total} of 6)</span>` : ""}</div>
+      ${ci ? `<p style="font-size:.9rem">${esc(ci.step)}</p><p class="muted" style="font-size:.8rem">Last check-in ${fmtDate(ci.created_at)} · ${d.checkins.length} so far</p>` : `<p class="empty">No check-in yet.</p>`}
+      <div class="actions"><a class="btn sm" href="#checkin" style="text-decoration:none">Check in on this week</a></div>
+    </section>
+    <section class="panel">
+      <h3>90-day plan</h3>
+      ${plan ? `<div class="stat"><strong>${plan.progress.done} of ${plan.progress.total}</strong><span>weeks done · day ${plan.day} of 90 · ${plan.progress.status}</span></div>
+        <div class="progress" role="img" aria-label="${plan.progress.done} of 12 done"><i style="width:${plan.progress.done / plan.progress.total * 100}%"></i></div>
+        ${firstOpen ? `<p style="font-size:.9rem"><strong>Next up (week ${firstOpen.week}):</strong> ${esc(firstOpen.text)}</p>` : `<p>All 12 weeks done. Time for a fresh competency check.</p>`}`
+        : `<p class="empty">Your plan appears after your first competency check.</p>`}
+      <div class="actions"><a class="btn sm ghost" href="#plan" style="text-decoration:none">Open plan</a></div>
+    </section>
+    <section class="panel">
+      <h3>Mentor sessions</h3>
+      <div class="stat"><strong>${reqs.accepted || 0}</strong><span>booked · ${reqs.pending || 0} waiting for a reply · ${reqs.completed || 0} completed</span></div>
+      <div class="actions"><a class="btn sm" href="#mentors" style="text-decoration:none">Find mentors</a><a class="btn sm ghost" href="#sessions" style="text-decoration:none">My sessions</a></div>
+    </section>
+    <section class="panel">
+      <h3>Goals</h3>
+      ${d.goals && d.goals.total ? `<div class="stat"><strong>${Math.round(((d.goals.done + d.goals.in_progress * 0.5) / d.goals.total) * 100)}%</strong><span>complete · ${d.goals.done} done, ${d.goals.in_progress} in progress, ${d.goals.total - d.goals.done - d.goals.in_progress} not started</span></div>
+        <div class="progress"><i style="width:${((d.goals.done + d.goals.in_progress * 0.5) / d.goals.total) * 100}%"></i></div>`
+        : `<p class="muted" style="font-size:.9rem">Turn action items from mentor sessions into goals and track them here.</p>`}
+      <div class="actions"><a class="btn sm ghost" href="#goals" style="text-decoration:none">Open goals</a></div>
+    </section>
+  </div>
+  ${la ? `<section class="panel">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px"><h2>Your top gaps</h2><span class="muted" style="font-size:.85rem">Against ${esc(profName(la.target_profile))} · ${fmtDate(la.created_at)} · <a href="#results-${la.id}">full results</a></span></div>
+    <div class="gaps">${la.result.top_gaps.map((g) => { const r = la.result.rows.find((x) => x.id === g); return `<div class="gap ${r.gap >= 2 ? "" : "g1"}"><h3>${esc(r.name)}</h3><span class="num">Now ${r.cur} · Target ${r.tgt}</span><p>${esc(comp(g).action)}</p></div>`; }).join("") || `<p class="muted">No gaps against this target.</p>`}</div>
+  </section>` : ""}
+  ${hist.length ? `<section class="panel hist">
+    <h2>Progress over time</h2>
+    ${hist.length > 1 ? `<p>Average score went from <strong>${first.avg}</strong> to <strong>${last.avg}</strong> out of 4, and total gap points from <strong>${first.total_gap}</strong> to <strong>${last.total_gap}</strong>.</p>` : ""}
+    <div class="tablewrap"><table><thead><tr><th>Date</th><th>Target</th><th>Average</th><th>At target</th><th>Gap points</th></tr></thead><tbody>
+      ${hist.slice().reverse().map((h) => `<tr><td><a href="#results-${h.id}">${fmtDate(h.created_at)}</a></td><td>${esc(profName(h.target_profile))}</td><td class="num">${h.avg} / 4</td><td class="num">${h.met} of ${h.count}</td><td class="num">${h.total_gap}</td></tr>`).join("")}
+    </tbody></table></div>
+  </section>` : ""}`;
+}
+
+// ---------------------------------------------------------------- mentee: check-in
+async function checkin() {
+  const { checkins } = await api("GET", "/api/checkins");
+  const sel = {};
+  const draw = () => {
+    $("#ci-form").innerHTML = S.meta.checkin.map((c) => `<div class="ci"><fieldset><legend>${esc(c.q)}</legend><div class="opts">${c.o.map((o, i) => `<button type="button" class="opt" data-q="${c.id}" data-i="${i}" aria-pressed="${sel[c.id] === i}">${esc(o.l)}</button>`).join("")}</div></fieldset></div>`).join("");
+    $$(".opt").forEach((b) => (b.onclick = () => { sel[b.dataset.q] = +b.dataset.i; draw(); }));
+    $("#ci-save").disabled = S.meta.checkin.some((c) => sel[c.id] === undefined);
+  };
+  view().innerHTML = `
+  <section class="panel">
+    <h2>Think-time check-in</h2>
+    <p class="muted">Three quick taps about this week. You get a short read on whether you're stuck and one small step. Each check-in is saved so you can see the trend.</p>
+    <div id="ci-form"></div>
+    <div class="actions"><button class="btn" id="ci-save" disabled>Save check-in</button></div>
+    <div id="ci-out"></div>
+  </section>
+  <section class="panel hist"><h2>Your check-ins</h2>
+    ${checkins.length ? `<div class="tablewrap"><table><thead><tr><th>Date</th><th>Stuck signal</th><th>Step</th></tr></thead><tbody>${checkins.map((c) => `<tr><td class="num">${fmtDate(c.created_at)}</td><td><span class="pill ${LEVEL_PILL[c.level]}">${c.level} (${c.total})</span></td><td class="reason">${esc(c.step)}</td></tr>`).join("")}</tbody></table></div>` : `<p class="empty">None yet.</p>`}
+  </section>`;
+  draw();
+  $("#ci-save").onclick = async () => {
+    const r = await api("POST", "/api/checkins", { answers: sel });
+    $("#ci-out").innerHTML = `<div class="readout"><div class="row"><span class="eyebrow">Stuck signal</span><span class="pill ${LEVEL_PILL[r.level]}">${r.level} (${r.total} of 6)</span></div><p>${esc(r.summary)}</p><div class="nextstep"><strong>Your one step this week:</strong> ${esc(r.step)}</div><div class="actions"><button class="btn ghost sm" id="ci-again">See history</button></div></div>`;
+    $("#ci-save").disabled = true;
+    $("#ci-again").onclick = () => checkin();
+  };
+}
+
+// ---------------------------------------------------------------- mentee: competency check
+async function assess() {
+  const { assessments } = await api("GET", "/api/assessments");
+  let prev = {};
+  if (assessments[0]) prev = (await api("GET", `/api/assessments/${assessments[0].id}`)).answers;
+  let target = (S.profile && S.profile.target_profile) || "global";
+  view().innerHTML = `
+  <section class="panel">
+    <h2>Competency check</h2>
+    <p class="muted">Pick the kind of company you want to lead product in, then answer eight questions the way you would in a leadership interview. ${assessments.length ? "Your last answers are filled in so you can improve them." : ""}</p>
+    <div class="eyebrow">Target profile</div>
+    <div class="profiles" id="profiles"></div>
+  </section>
+  <section class="panel">
+    <form class="form" id="qa">${S.meta.competencies.map((c, i) => `<div class="q"><span class="comp">Q${i + 1} · ${esc(c.name)}</span><label for="a-${c.id}">${esc(c.q)}</label><textarea id="a-${c.id}" name="${c.id}" placeholder="Type your answer">${esc(prev[c.id] || "")}</textarea></div>`).join("")}</form>
+    <div class="err" id="qa-err"></div>
+    <div class="actions">
+      <button class="btn" id="qa-go">Score and save</button>
+      <button class="btn ghost" id="qa-prefill" type="button">Prefill strong answers</button>
+      <button class="btn ghost" id="qa-clear" type="button">Clear</button>
+    </div>
+    <p class="note">Saving creates a new result and starts a fresh 90-day plan from your new top gaps. Earlier results stay in your history.</p>
+    <details><summary>How scoring works</summary><ul>
+      <li>Each competency has 4 signal groups. 1 = no signals, 2 = one, 3 = two or three, 4 = all four (or three plus a concrete number).</li>
+      <li>Answers under 15 words are capped at 2. Each target profile sets the level expected for that kind of company.</li></ul></details>
+  </section>`;
+  const drawP = () => {
+    $("#profiles").innerHTML = S.meta.profiles.map((p) => `<button type="button" class="profile" data-id="${p.id}" aria-pressed="${p.id === target}"><strong>${esc(p.name)}</strong><span>${esc(p.blurb)}</span></button>`).join("");
+    $$(".profile").forEach((b) => (b.onclick = () => { target = b.dataset.id; drawP(); }));
+  };
+  drawP();
+  const fill = (src) => S.meta.competencies.forEach((c) => ($(`#a-${c.id}`).value = src[c.id] || ""));
+  $("#qa-clear").onclick = () => fill({});
+  $("#qa-prefill").onclick = () => fill(S.meta.sample_answers);
+  $("#qa-go").onclick = async () => {
+    const answers = Object.fromEntries(S.meta.competencies.map((c) => [c.id, $(`#a-${c.id}`).value]));
+    if (!Object.values(answers).some((v) => v.trim())) { $("#qa-err").textContent = "Answer at least one question first."; return; }
+    $("#qa-go").disabled = true;
+    try { const r = await api("POST", "/api/assessments", { target_profile: target, answers }); S.profile.target_profile = target; location.hash = `#results-${r.id}`; }
+    catch (e) { $("#qa-err").textContent = e.message; $("#qa-go").disabled = false; }
+  };
+}
+
+async function results(id) {
+  const a = await api("GET", `/api/assessments/${id}`);
+  const { result: R } = a, sm = R.summary;
+  view().innerHTML = `
+  <section class="panel" id="results">
+    <h2>Gap view</h2>
+    <p class="muted">${fmtDate(a.created_at)} · against ${esc(profName(a.target_profile))}</p>
+    <div class="summary">
+      <div><span class="eyebrow">Average score</span><strong>${sm.avg} / 4</strong></div>
+      <div><span class="eyebrow">At target</span><strong>${sm.met} of ${sm.count}</strong></div>
+      <div><span class="eyebrow">Total gap points</span><strong>${sm.total_gap}</strong></div>
+    </div>
+    <div class="legend"><span><i class="sw"></i>Current score (1 to 4)</span><span><i class="tk"></i>Target</span></div>
+    <div class="tablewrap"><table><thead><tr><th>Competency</th><th>Current vs target</th><th>Gap</th><th>Why this score</th></tr></thead><tbody>
+    ${R.rows.map((r) => `<tr><td><strong>${esc(r.name)}</strong></td><td class="num">${r.cur} ${S.meta.levels[r.cur]} → ${r.tgt}<div class="bar" role="img" aria-label="Current ${r.cur}, target ${r.tgt} of 4"><i style="width:${r.cur / 4 * 100}%"></i><u style="left:calc(${r.tgt / 4 * 100}% - 1px)"></u></div></td><td>${r.gap === 0 ? `<span class="pill ok">${r.cur > r.tgt ? "Above target" : "At target"}</span>` : `<span class="pill ${r.gap >= 2 ? "gap2" : "gap1"}">${r.gap} below</span>`}</td><td class="reason">${esc(r.reason)}</td></tr>`).join("")}
+    </tbody></table></div>
+    <h3>Top gaps and next actions</h3>
+    <div class="gaps">${R.top_gaps.map((g) => { const r = R.rows.find((x) => x.id === g); return `<div class="gap ${r.gap >= 2 ? "" : "g1"}"><h3>${esc(r.name)}</h3><span class="num">Now ${r.cur} (${S.meta.levels[r.cur]}) · Target ${r.tgt} (${S.meta.levels[r.tgt]})</span><p><strong>Next action:</strong> ${esc(comp(g).action)}</p></div>`; }).join("") || `<p class="muted">You meet every target for this profile. Try a more demanding one.</p>`}</div>
+    <div id="coach-box">${a.coach_note ? `<h3>AI coach note</h3><div class="coach">${esc(a.coach_note)}</div>` : ""}</div>
+    <div class="actions">
+      <a class="btn" href="#path-${a.id}" style="text-decoration:none">See your path to close these gaps</a>
+      <a class="btn ghost" href="#mentors" style="text-decoration:none">See matched mentors</a>
+      ${S.meta.llm_enabled && !a.coach_note ? `<button class="btn ghost" id="coach">Get an AI coach note</button>` : ""}
+    </div>
+    <div class="err" id="coach-err"></div>
+  </section>`;
+  const cb = $("#coach");
+  if (cb) cb.onclick = async () => {
+    cb.disabled = true; cb.textContent = "Writing…";
+    try { const r = await api("POST", `/api/assessments/${id}/coach`); $("#coach-box").innerHTML = `<h3>AI coach note</h3><div class="coach">${esc(r.coach_note)}</div>`; cb.remove(); }
+    catch (e) { $("#coach-err").textContent = e.message; cb.disabled = false; cb.textContent = "Try again"; }
+  };
+}
+
+// ---------------------------------------------------------------- mentee: path to close gaps
+async function path(id) {
+  if (!id) {
+    const { assessments } = await api("GET", "/api/assessments");
+    if (!assessments.length) { view().innerHTML = `<p class="empty">Your path is built from your competency check. <a href="#assess">Take it now</a>.</p>`; return; }
+    id = assessments[0].id;
+  }
+  const a = await api("GET", `/api/assessments/${id}`);
+  const R = a.result, gaps = R.top_gaps.map((g) => R.rows.find((r) => r.id === g));
+  const L = S.meta.levels;
+  view().innerHTML = `
+  <section class="hero path-hero">
+    <span class="kicker">Your path</span>
+    <h1>How to close your top ${gaps.length === 1 ? "gap" : `${gaps.length} gaps`}</h1>
+    <p class="muted">Against ${esc(profName(a.target_profile))}. For each gap: what good looks like at your target level, what to do on your own, how to show progress, and when a mentor helps most. Your <a href="#plan">90-day plan</a> takes one gap per month in this order.</p>
+    ${gaps.length ? `<ol class="path-index">${gaps.map((g, i) => `<li><a href="#path-${a.id}" data-jump="gap-${g.id}"><b>${i + 1}</b>${esc(g.name)}<span class="pill ${g.gap >= 2 ? "gap2" : "gap1"}">${g.cur} → ${g.tgt}</span></a></li>`).join("")}</ol>` : ""}
+  </section>
+  ${gaps.length ? gaps.map((g, i) => { const P = S.meta.paths[g.id]; return `
+  <section class="panel path-gap" id="gap-${g.id}">
+    <div class="path-top">
+      <div><span class="eyebrow">Gap ${i + 1} · Month ${i + 1} of your plan</span><h2>${esc(g.name)}</h2></div>
+      <div class="levels" aria-label="From level ${g.cur} to level ${g.tgt}">
+        <span><b>${g.cur}</b>${L[g.cur]}</span><i aria-hidden="true">→</i><span class="to"><b>${g.tgt}</b>${L[g.tgt]}</span>
+      </div>
+    </div>
+    <div class="path-good"><span class="eyebrow">What good looks like at level ${g.tgt}</span><p>${esc(P.good)}</p></div>
+    <p class="path-why"><strong>Why you scored ${g.cur}:</strong> ${esc(g.reason)}</p>
+    <div><span class="eyebrow">Close it on your own</span>
+      <ul class="path-actions">${P.actions.map(([k, t]) => `<li><span class="tag">${esc(k)}</span><span>${esc(t)}</span></li>`).join("")}</ul></div>
+    <div class="path-foot">
+      <div class="path-proof"><span class="eyebrow">How to show progress</span><p>${esc(P.proof)}</p></div>
+      <div class="path-mentor"><span class="eyebrow">When a mentor adds the most</span><p>${esc(P.mentor)}</p></div>
+    </div>
+  </section>`; }).join("") : `<p class="empty">You meet every target for this profile. Try a more demanding one in the <a href="#assess">competency check</a>.</p>`}
+  <section class="panel path-next">
+    <div><h2>Ready to train with someone who's done it?</h2><p class="muted">See mentors ranked by how strong they are in exactly these gaps.</p></div>
+    <div class="actions"><a class="btn lg" href="#mentors">See matched mentors</a><a class="btn ghost lg" href="#plan">Open my 90-day plan</a></div>
+  </section>`;
+  $$("[data-jump]").forEach((el) => (el.onclick = (e) => { e.preventDefault(); document.getElementById(el.dataset.jump).scrollIntoView({ behavior: "smooth" }); }));
+}
+
+// ---------------------------------------------------------------- mentee: mentors
+async function mentors() {
+  const d = await api("GET", "/api/matches");
+  const gaps = d.top_gaps;
+  view().innerHTML = `
+  ${gaps.length ? `<section class="panel"><h2>Who to talk to</h2>
+    <p class="muted">For each of your top gaps, the kind of person who can help most and what to ask them.</p>
+    <div class="people">${gaps.map((g) => { const w = S.meta.who[g]; return `<div class="who"><span class="for">For your gap in ${esc(compName(g))}</span><h3>${esc(w.who)}</h3><div><span class="tag">${esc(w.tag)}</span></div><p><strong>Why:</strong> ${esc(w.why)}</p><p class="ask">Ask: "${esc(w.ask)}"</p></div>`; }).join("")}</div>
+  </section>` : `<p class="empty">Take the <a href="#assess">competency check</a> first so mentors can be matched to your gaps. Until then, they're listed by availability.</p>`}
+  <section class="panel">
+    <h2>Matched mentors</h2>
+    <p class="muted">Ranked by how strong they are in your top gaps (bigger gaps count more), whether they've made the career move you want${S.profile.goal_move ? ` (${esc(moveName(S.profile.goal_move))})` : ""}, and whether they have open slots this month.</p>
+    <div class="grid2" id="mlist">${d.matches.map((x) => mentorCard(x, gaps, d.max_score)).join("")}</div>
+  </section>`;
+  $$("[data-req]").forEach((b) => (b.onclick = () => openRequestForm(b.closest(".card"), +b.dataset.req, gaps, d.matches)));
+}
+
+function testimonialBlock(items) {
+  return items.map((t) => `<figure class="quote"><blockquote>${esc(t.quote)}</blockquote><figcaption>${t.name ? `<strong>${esc(t.name)}</strong> · ` : ""}<span class="muted">${esc(t.role || "")}</span></figcaption></figure>`).join("");
+}
+
+function mentorCard(x, gaps, maxScore) {
+  const pct = maxScore ? Math.round(x.score / maxScore * 100) : 0;
+  const m = x.mentor;
+  const btn = x.request_status ? `<span class="status ${x.request_status}">${x.request_status}</span> <a href="#sessions" style="font-size:.85rem">View</a>`
+    : x.open_slots > 0 ? `<button class="btn sm" data-req="${m.id}">Request a session</button>` : `<button class="btn sm" disabled>Full this month</button>`;
+  return `<div class="card">
+    <div class="mentor-head"><span class="mini" aria-hidden="true">${initials(m.name)}</span><div><strong>${esc(m.name)}</strong><br><span class="muted" style="font-size:.85rem">${esc(m.headline)} · ${m.years_exp} yrs</span></div>${x.score >= 1 ? `<span class="score" title="How well this mentor fits your gaps and goal">${pct}%<small class="muted" style="display:block;font-size:.65rem;font-weight:500;text-align:right">match</small></span>` : ""}</div>
+    <p style="font-size:.88rem">${esc(m.bio)}</p>
+    ${m.why ? `<div class="why"><span class="eyebrow">Why I mentor</span><p>${esc(m.why)}</p></div>` : ""}
+    <div class="chips">${m.strengths.map((s) => `<span class="chip ${gaps.includes(s) ? "hit" : ""}">${esc(compName(s))}</span>`).join("")}</div>
+    ${x.reasons.length ? `<ul class="reasons">${x.reasons.map((r) => `<li>${esc(r)}</li>`).join("")}</ul>` : ""}
+    <p class="muted" style="font-size:.8rem">${x.open_slots} open slot${x.open_slots === 1 ? "" : "s"} this month · ${esc(m.availability)}</p>
+    <div class="actions" style="align-items:center">${btn}</div>
+  </div>`;
+}
+
+function openRequestForm(card, mentorId, gaps, matches) {
+  const x = matches.find((y) => y.mentor_id === mentorId);
+  const topic = x.covers[0] || gaps[0] || "";
+  const ask = topic ? S.meta.who[topic].ask : "Could we talk for 30 minutes about my next career move?";
+  const box = document.createElement("form");
+  box.className = "form";
+  box.innerHTML = `
+    <label class="f">Topic<select name="competency"><option value="">General career advice</option>${S.meta.competencies.map((c) => `<option value="${c.id}" ${c.id === topic ? "selected" : ""}>${esc(c.name)}${gaps.includes(c.id) ? " (your gap)" : ""}</option>`).join("")}</select></label>
+    <label class="f">Message<textarea name="message" required>Hi ${esc(x.mentor.name.split(" ")[0])}, I'm a ${esc(S.profile.headline || "product manager")} working toward ${esc(S.profile.goal || "my next role")}. ${esc(ask)}</textarea></label>
+    <div class="err"></div>
+    <div class="actions"><button class="btn sm">Send request</button><button type="button" class="btn ghost sm" data-x>Cancel</button></div>`;
+  card.querySelector(".actions").replaceWith(box);
+  box.querySelector("[data-x]").onclick = () => mentors();
+  box.onsubmit = async (e) => {
+    e.preventDefault(); const f = new FormData(box);
+    try { await api("POST", "/api/requests", { mentor_id: mentorId, competency: f.get("competency"), message: f.get("message") }); mentors(); }
+    catch (err) { box.querySelector(".err").textContent = err.message; }
+  };
+}
+
+// ---------------------------------------------------------------- mentee: plan
+async function plan() {
+  const { plan: P } = await api("GET", "/api/plan");
+  if (!P) { view().innerHTML = `<p class="empty">Your 90-day plan is built from your competency check. <a href="#assess">Take it now</a>.</p>`; return; }
+  const months = [1, 2, 3].map((m) => P.tasks.filter((t) => t.month === m));
+  view().innerHTML = `
+  <section class="panel">
+    <h2>Your 90-day plan</h2>
+    <p class="muted">Started ${fmtDate(P.created_at)} from <a href="#results-${P.assessment_id}">this result</a>. One gap per month, one small action per week. Week 2 of each month is a mentor conversation, and it ticks itself off when that session is marked complete.</p>
+    <div class="summary">
+      <div class="stat"><span class="eyebrow">Done</span><strong>${P.progress.done} of ${P.progress.total}</strong></div>
+      <div class="stat"><span class="eyebrow">Today</span><strong>Week ${P.current_week}</strong></div>
+      <div class="stat"><span class="eyebrow">Pace</span><strong style="text-transform:capitalize">${P.progress.status}</strong></div>
+    </div>
+    <div class="progress"><i style="width:${P.progress.done / P.progress.total * 100}%"></i></div>
+  </section>
+  <div class="grid3">${months.map((ts, i) => `<section class="month panel" style="gap:8px"><span class="eyebrow">Month ${i + 1} · Days ${i * 30 + 1} to ${i * 30 + 30}</span><h3>Focus: ${esc(ts[0].focus)}</h3>
+    <div>${ts.map((t) => `<label class="task ${t.done ? "done" : ""} ${t.talk ? "talk" : ""} ${t.week === P.current_week ? "now" : ""}"><input type="checkbox" data-t="${t.id}" ${t.done ? "checked" : ""}><b>Week ${t.week}</b><span>${esc(t.text)}${t.talk ? ` <a href="#mentors">Find someone</a>` : ""}</span></label>`).join("")}</div></section>`).join("")}</div>
+  <section class="panel"><h3>Share with a mentor</h3><p class="muted">Copy a plain-text summary to paste into a message before your first conversation.</p>
+    <div class="actions"><button class="btn ghost" id="copy">Copy plan summary</button><span id="copied" aria-live="polite"></span></div></section>`;
+  $$("[data-t]").forEach((c) => (c.onchange = async () => { await api("PATCH", `/api/plan/tasks/${c.dataset.t}`, { done: c.checked }); plan(); }));
+  $("#copy").onclick = async () => {
+    const txt = ["MY CAREERGYM 90-DAY PLAN", `${S.me.name}${S.profile.goal ? ", goal: " + S.profile.goal : ""}`, "",
+      ...months.flatMap((ts, i) => [`Month ${i + 1}, focus: ${ts[0].focus}`, ...ts.map((t) => `  [${t.done ? "x" : " "}] Week ${t.week}: ${t.text}`)])].join("\n");
+    try { await navigator.clipboard.writeText(txt); $("#copied").textContent = "Copied."; } catch { $("#copied").textContent = "Copy failed. Your browser blocked clipboard access."; }
+  };
+}
+
+// ---------------------------------------------------------------- sessions (both roles)
+function requestRow(r, role) {
+  const actions = [];
+  if (role === "mentee" && ["pending", "accepted"].includes(r.status)) actions.push(`<button class="btn danger sm" data-a="cancel" data-r="${r.id}">Cancel</button>`);
+  if (r.status === "accepted") actions.push(`<button class="btn sm" data-a="complete" data-r="${r.id}">Mark session complete</button>`);
+  return `<div class="card">
+    <div class="mentor-head"><span class="mini" aria-hidden="true">${initials(r.other_name)}</span><div><strong>${esc(r.other_name)}</strong><br><span class="muted" style="font-size:.85rem">${esc(r.other_headline || "")}</span></div><span class="status ${r.status}" style="margin-left:auto">${r.status}</span></div>
+    <p class="muted" style="font-size:.8rem">Topic: ${esc(compName(r.competency))} · sent ${fmtDate(r.created_at)}</p>
+    <p style="font-size:.9rem">${esc(r.message)}</p>
+    ${r.mentor_note || r.proposed_time ? `<div class="nextstep">${r.proposed_time ? `<strong>When:</strong> ${esc(r.proposed_time)}<br>` : ""}${r.mentor_note ? `<strong>Mentor's note:</strong> ${esc(r.mentor_note)}` : ""}</div>` : ""}
+    ${actions.length ? `<div class="actions">${actions.join("")}</div>` : ""}
+    ${sessionNotes(r, role)}
+  </div>`;
+}
+
+function sessionNotes(r, role) {
+  if (!["accepted", "completed"].includes(r.status)) return "";
+  const notes = r.notes || [];
+  const today = new Date().toISOString().slice(0, 10);
+  return `<div class="notes">
+    <div class="notes-h"><span class="eyebrow">Session notes and action items</span>${notes.length ? `<span class="muted">${notes.length} note${notes.length > 1 ? "s" : ""}</span>` : ""}</div>
+    ${notes.map((n) => `<div class="snote">
+      <div class="snote-meta"><strong>${esc(n.author_name)}</strong><span class="muted">${n.author_role === "mentor" ? "Mentor" : "Mentee"} · ${fmtDate(n.created_at)}</span></div>
+      ${n.text ? `<p>${esc(n.text)}</p>` : ""}
+      ${n.actions.length ? `<ul class="action-items">${n.actions.map((a) => `<li>
+        <span class="ai-text">${esc(a.text)}</span>
+        <span class="ai-meta">${a.competency ? `<span class="chip">${esc(compName(a.competency))}</span>` : ""}${a.due ? `<span class="muted">Due ${fmtDate(a.due + "T00:00:00")}</span>` : ""}</span>
+        ${role === "mentee" ? (a.goal_id ? `<a class="ai-goal done" href="#goals">✓ Tracking as goal</a>` : `<button class="btn ghost sm" data-goal='${esc(JSON.stringify({ text: a.text, competency: a.competency, due: a.due, source_request_id: r.id, source_action_id: a.id }))}'>Track as goal</button>`) : (a.goal_id ? `<span class="ai-goal">Mentee is tracking this</span>` : "")}
+      </li>`).join("")}</ul>` : ""}
+    </div>`).join("")}
+    <details class="add-note"><summary>${notes.length ? "Add notes" : "Add session notes and action items"}</summary>
+      <form class="form" data-notes="${r.id}">
+        <label class="f">Notes<textarea name="text" placeholder="${role === "mentor" ? "What you discussed, what you noticed, what they should focus on" : "Your key takeaways from the conversation"}"></textarea></label>
+        <span class="eyebrow">Action items</span>
+        ${[0, 1, 2].map((i) => `<div class="ai-row">
+          <input type="text" name="a${i}" placeholder="Action item ${i + 1}" aria-label="Action item ${i + 1}">
+          <select name="c${i}" aria-label="Gap for action item ${i + 1}">${S.meta.competencies.map((c) => `<option value="${c.id}" ${c.id === r.competency ? "selected" : ""}>${esc(c.name)}</option>`).join("")}</select>
+          <input type="date" name="d${i}" min="${today}" aria-label="Due date for action item ${i + 1}">
+        </div>`).join("")}
+        <div class="err"></div>
+        <div class="actions"><button class="btn sm">Save notes</button></div>
+      </form>
+    </details>
+  </div>`;
+}
+
+function bindSessionNotes(reload) {
+  $$("[data-notes]").forEach((f) => (f.onsubmit = async (e) => {
+    e.preventDefault(); const fd = new FormData(f);
+    const actions = [0, 1, 2].map((i) => ({ text: fd.get("a" + i), competency: fd.get("c" + i), due: fd.get("d" + i) })).filter((a) => a.text && a.text.trim());
+    try { await api("POST", `/api/requests/${f.dataset.notes}/notes`, { text: fd.get("text"), actions }); reload(); }
+    catch (err) { $(".err", f).textContent = err.message; }
+  }));
+  $$("[data-goal]").forEach((b) => (b.onclick = async () => {
+    b.disabled = true;
+    try { await api("POST", "/api/goals", JSON.parse(b.dataset.goal)); reload(); }
+    catch (err) { alertInline(b, err.message); }
+  }));
+}
+
+function bindRequestActions(reload) {
+  $$("[data-a]").forEach((b) => (b.onclick = async () => {
+    b.disabled = true;
+    try { await api("POST", `/api/requests/${b.dataset.r}/${b.dataset.a}`, {}); reload(); }
+    catch (e) { alertInline(b, e.message); }
+  }));
+}
+function alertInline(el, msg) { const p = document.createElement("p"); p.className = "err"; p.textContent = msg; el.closest(".card").append(p); el.disabled = false; }
+
+async function sessions() {
+  const { requests } = await api("GET", "/api/requests");
+  view().innerHTML = `<section class="panel"><h2>My mentor sessions</h2>
+    ${requests.length ? `<div class="session-list">${requests.map((r) => requestRow(r, "mentee")).join("")}</div>` : `<p class="empty">No requests yet. <a href="#mentors">Find a mentor</a>.</p>`}</section>`;
+  bindRequestActions(sessions);
+  bindSessionNotes(sessions);
+}
+
+// ---------------------------------------------------------------- mentee: goals
+const STATUS_LABEL = { not_started: "Not started", in_progress: "In progress", done: "Done" };
+const goalPct = (gs) => gs.length ? Math.round(gs.reduce((a, g) => a + (g.status === "done" ? 1 : g.status === "in_progress" ? 0.5 : 0), 0) / gs.length * 100) : 0;
+
+async function goals() {
+  const [{ goals: G }, { assessments }] = await Promise.all([api("GET", "/api/goals"), api("GET", "/api/assessments")]);
+  const top = assessments[0] ? assessments[0].result.top_gaps : [];
+  const today = new Date().toISOString().slice(0, 10);
+  const comps = [...new Set([...top, ...G.map((g) => g.competency || "general")])];
+  const groups = comps.map((c) => ({ c, items: G.filter((g) => (g.competency || "general") === c) }));
+  const total = G.length, done = G.filter((g) => g.status === "done").length, fromSessions = G.filter((g) => g.source).length;
+  const overdue = G.filter((g) => g.status !== "done" && g.due && g.due < today).length;
+  view().innerHTML = `
+  <section class="panel">
+    <h2>Goals</h2>
+    <p class="muted">Action items from your mentor sessions and your own goals, grouped by the gap they close. In progress counts as half done.</p>
+    <div class="summary">
+      <div class="stat"><span class="eyebrow">Overall</span><strong>${goalPct(G)}%</strong></div>
+      <div class="stat"><span class="eyebrow">Done</span><strong>${done} of ${total}</strong></div>
+      <div class="stat"><span class="eyebrow">From mentor sessions</span><strong>${fromSessions}</strong></div>
+      <div class="stat"><span class="eyebrow">Overdue</span><strong class="${overdue ? "overdue-n" : ""}">${overdue}</strong></div>
+    </div>
+    <div class="gap-progress">${groups.map(({ c, items }) => `<div class="gp-row">
+      <span class="gp-name">${esc(c === "general" ? "General" : compName(c))}${top.includes(c) ? ` <span class="pill gap1">Top gap</span>` : ""}</span>
+      <div class="progress" role="img" aria-label="${goalPct(items)}% complete"><i style="width:${goalPct(items)}%"></i></div>
+      <span class="gp-num">${items.length ? `${goalPct(items)}% · ${items.filter((g) => g.status === "done").length} of ${items.length}` : "No goals yet"}</span>
+    </div>`).join("")}</div>
+  </section>
+  ${groups.filter((g) => g.items.length).map(({ c, items }) => `<section class="panel">
+    <h3>${esc(c === "general" ? "General" : compName(c))}</h3>
+    <div class="goal-list">${items.map((g) => `<div class="goal ${g.status}">
+      <div class="goal-main">
+        <p>${esc(g.text)}</p>
+        <span class="muted goal-src">${g.source ? `From your session with <a href="#sessions">${esc(g.source.mentor_name)}</a> · ${fmtDate(g.source.date)}` : `Your own goal · added ${fmtDate(g.created_at)}`}${g.status === "done" && g.done_at ? ` · done ${fmtDate(g.done_at)}` : ""}</span>
+      </div>
+      <div class="goal-ctl">
+        <label class="sr" for="due-${g.id}">Due date</label>
+        <input type="date" id="due-${g.id}" data-due="${g.id}" value="${g.due || ""}" class="${g.status !== "done" && g.due && g.due < today ? "late" : ""}">
+        <label class="sr" for="st-${g.id}">Status</label>
+        <select id="st-${g.id}" data-st="${g.id}" class="st ${g.status}">${Object.entries(STATUS_LABEL).map(([k, l]) => `<option value="${k}" ${k === g.status ? "selected" : ""}>${l}</option>`).join("")}</select>
+      </div>
+    </div>`).join("")}</div>
+  </section>`).join("")}
+  ${!total ? `<p class="empty">No goals yet. After a mentor session, add notes and action items on the <a href="#sessions">Sessions</a> page and choose "Track as goal", or add one below.</p>` : ""}
+  <section class="panel">
+    <h3>Add your own goal</h3>
+    <form class="form" id="goal-new">
+      <div class="ai-row wide">
+        <input type="text" name="text" placeholder="For example: present my area's strategy at the next planning review" aria-label="Goal" required>
+        <select name="competency" aria-label="Gap">${S.meta.competencies.map((c) => `<option value="${c.id}" ${c.id === top[0] ? "selected" : ""}>${esc(c.name)}</option>`).join("")}</select>
+        <input type="date" name="due" min="${today}" aria-label="Due date">
+      </div>
+      <div class="err"></div>
+      <div class="actions"><button class="btn sm">Add goal</button></div>
+    </form>
+  </section>`;
+  $$("[data-st]").forEach((el) => (el.onchange = async () => { await api("PATCH", `/api/goals/${el.dataset.st}`, { status: el.value }); goals(); }));
+  $$("[data-due]").forEach((el) => (el.onchange = async () => { await api("PATCH", `/api/goals/${el.dataset.due}`, { due: el.value }); goals(); }));
+  $("#goal-new").onsubmit = async (e) => {
+    e.preventDefault(); const f = Object.fromEntries(new FormData(e.target));
+    try { await api("POST", "/api/goals", f); goals(); } catch (err) { $("#goal-new .err").textContent = err.message; }
+  };
+}
+
+// ---------------------------------------------------------------- mentee: profile
+async function profile() {
+  await refreshMe();
+  const p = S.profile;
+  view().innerHTML = `<section class="panel"><h2>Your profile</h2>
+    <p class="muted">This shapes your matches and is shared with mentors you send a request to.</p>
+    <form class="form" id="pf">
+      <label class="f">Name<input type="text" name="name" value="${esc(S.me.name)}"></label>
+      <div class="grid2">
+        <label class="f">Current role<input type="text" name="headline" value="${esc(p.headline)}" placeholder="Senior Product Manager"></label>
+        <label class="f">Years of experience<input type="number" min="0" max="60" name="years_exp" value="${p.years_exp || 0}"></label>
+      </div>
+      <label class="f">Company (type and tenure)<input type="text" name="current_company" value="${esc(p.current_company)}"></label>
+      <label class="f">Your goal, in your words<input type="text" name="goal" value="${esc(p.goal)}" placeholder="Head of Product in 3 to 5 years"></label>
+      <div class="grid2">
+        <label class="f">Career move you're aiming for<select name="goal_move"><option value="">Not sure yet</option>${S.meta.moves.map((m) => `<option value="${m.id}" ${m.id === p.goal_move ? "selected" : ""}>${esc(m.name)}</option>`).join("")}</select></label>
+        <label class="f">Target company profile<select name="target_profile">${S.meta.profiles.map((x) => `<option value="${x.id}" ${x.id === p.target_profile ? "selected" : ""}>${esc(x.name)}</option>`).join("")}</select></label>
+      </div>
+      <label class="f">What's going on (optional)<textarea name="context">${esc(p.context)}</textarea></label>
+      <div class="err" id="pf-err"></div><div class="ok-msg" id="pf-ok"></div>
+      <div class="actions"><button class="btn">Save profile</button></div>
+    </form></section>`;
+  $("#pf").onsubmit = async (e) => {
+    e.preventDefault(); const f = Object.fromEntries(new FormData(e.target)); f.years_exp = +f.years_exp || 0;
+    const first = !S.profile.headline;
+    try { const r = await api("PUT", "/api/profile", f); S.me = r.user; S.profile = r.profile; renderTopbar(); $("#pf-err").textContent = ""; $("#pf-ok").textContent = "Saved."; if (first) location.hash = "#assess"; }
+    catch (err) { $("#pf-err").textContent = err.message; }
+  };
+}
+
+// ---------------------------------------------------------------- mentor: inbox
+async function inbox() {
+  const [{ requests }] = await Promise.all([api("GET", "/api/requests"), refreshMe()]);
+  const pending = requests.filter((r) => r.status === "pending"), booked = requests.filter((r) => r.status === "accepted"), past = requests.filter((r) => !["pending", "accepted"].includes(r.status));
+  const m = S.profile;
+  const gapsHtml = (r) => r.mentee_gaps && r.mentee_gaps.length ? `<div><span class="eyebrow">Their top gaps</span><div class="chips" style="margin-top:4px">${r.mentee_gaps.map((g) => `<span class="chip ${m.strengths.includes(g.id) ? "hit" : ""}">${esc(g.name)} ${g.cur}→${g.tgt}</span>`).join("")}</div></div>` : "";
+  view().innerHTML = `
+  <section class="panel">
+    <h2>Session requests</h2>
+    <p class="muted">${m.open_slots} of ${m.monthly_capacity} slots open this month. Highlighted gaps are ones you listed as strengths. <a href="#mentor-profile">Edit capacity</a></p>
+    ${pending.length ? `<div class="grid2">${pending.map((r) => `<div class="card" data-card="${r.id}">
+      <div class="mentor-head"><span class="mini" aria-hidden="true">${initials(r.other_name)}</span><div><strong>${esc(r.other_name)}</strong><br><span class="muted" style="font-size:.85rem">${esc(r.other_headline || "")}${r.mentee_years ? ` · ${r.mentee_years} yrs` : ""}</span></div><span class="status pending" style="margin-left:auto">pending</span></div>
+      ${r.mentee_goal ? `<p style="font-size:.85rem"><strong>Goal:</strong> ${esc(r.mentee_goal)}</p>` : ""}
+      <p class="muted" style="font-size:.8rem">Topic: ${esc(compName(r.competency))} · sent ${fmtDate(r.created_at)}</p>
+      <p style="font-size:.9rem">${esc(r.message)}</p>
+      ${gapsHtml(r)}
+      <form class="form" data-f="${r.id}">
+        <label class="f">Proposed time<input type="text" name="proposed_time" placeholder="Saturday 11:00 IST"></label>
+        <label class="f">Note to them<input type="text" name="note" placeholder="Bring your one-page strategy draft"></label>
+        <div class="err"></div>
+        <div class="actions"><button class="btn sm" data-do="accept">Accept</button><button class="btn danger sm" data-do="decline">Decline</button></div>
+      </form></div>`).join("")}</div>` : `<p class="empty">No new requests yet. When a mentee whose top gaps match your strengths asks for a session, it shows up here with their goal and gap view.</p>`}
+  </section>
+  <section class="panel"><h2>Booked</h2>${booked.length ? `<div class="session-list">${booked.map((r) => requestRow(r, "mentor")).join("")}</div>` : `<p class="empty">No sessions booked yet.</p>`}</section>
+  ${past.length ? `<section class="panel"><h2>Past</h2><div class="session-list">${past.map((r) => requestRow(r, "mentor")).join("")}</div></section>` : ""}`;
+  $$("[data-f]").forEach((f) => $$("[data-do]", f).forEach((b) => (b.onclick = async (e) => {
+    e.preventDefault(); const d = Object.fromEntries(new FormData(f));
+    try { await api("POST", `/api/requests/${f.dataset.f}/${b.dataset.do}`, d); inbox(); }
+    catch (err) { $(".err", f).textContent = err.message; }
+  })));
+  bindRequestActions(inbox);
+  bindSessionNotes(inbox);
+}
+
+async function mentorProfile() {
+  await refreshMe();
+  const m = S.profile;
+  view().innerHTML = `<section class="panel"><h2>Your mentor profile</h2>
+    <p class="muted">Mentees are matched to you when your strengths line up with their biggest gaps, and when you've made the move they want.</p>
+    <form class="form" id="mf">
+      <label class="f">Name<input type="text" name="name" value="${esc(S.me.name)}"></label>
+      <div class="grid2">
+        <label class="f">Role and company type<input type="text" name="headline" value="${esc(m.headline)}" placeholder="VP Product, enterprise SaaS"></label>
+        <label class="f">Years of experience<input type="number" min="0" max="60" name="years_exp" value="${m.years_exp || 0}"></label>
+      </div>
+      <label class="f">Short bio<textarea name="bio">${esc(m.bio)}</textarea></label>
+      <label class="f">Why I mentor (shown to mentees)<textarea name="why" placeholder="One or two sentences in your own words">${esc(m.why || "")}</textarea></label>
+      <fieldset style="border:0;padding:0;margin:0"><legend class="eyebrow" style="margin-bottom:6px">Competencies you're strong in</legend>
+        <div class="checks">${S.meta.competencies.map((c) => `<label><input type="checkbox" name="strengths" value="${c.id}" ${m.strengths.includes(c.id) ? "checked" : ""}> ${esc(c.name)}</label>`).join("")}</div></fieldset>
+      <fieldset style="border:0;padding:0;margin:0"><legend class="eyebrow" style="margin-bottom:6px">Career moves you've made</legend>
+        <div class="checks">${S.meta.moves.map((x) => `<label><input type="checkbox" name="moves" value="${x.id}" ${m.moves.includes(x.id) ? "checked" : ""}> ${esc(x.name)}</label>`).join("")}</div></fieldset>
+      <div class="grid2">
+        <label class="f">Sessions per month<input type="number" min="0" max="20" name="monthly_capacity" value="${m.monthly_capacity}"></label>
+        <label class="f">When you're usually free<input type="text" name="availability" value="${esc(m.availability)}" placeholder="Weekday evenings"></label>
+      </div>
+      <div class="err" id="mf-err"></div><div class="ok-msg" id="mf-ok"></div>
+      <div class="actions"><button class="btn">Save profile</button></div>
+    </form></section>`;
+  $("#mf").onsubmit = async (e) => {
+    e.preventDefault(); const fd = new FormData(e.target);
+    const body = { name: fd.get("name"), headline: fd.get("headline"), bio: fd.get("bio"), why: fd.get("why"), years_exp: +fd.get("years_exp") || 0,
+      strengths: fd.getAll("strengths"), moves: fd.getAll("moves"), monthly_capacity: +fd.get("monthly_capacity") || 0, availability: fd.get("availability") };
+    const first = !S.profile.headline;
+    try { const r = await api("PUT", "/api/profile", body); S.me = r.user; S.profile = r.profile; renderTopbar(); $("#mf-err").textContent = ""; $("#mf-ok").textContent = "Saved."; if (first) location.hash = "#inbox"; }
+    catch (err) { $("#mf-err").textContent = err.message; }
+  };
+}
+
+// ---------------------------------------------------------------- boot
+(async function boot() {
+  try {
+    [S.meta] = await Promise.all([api("GET", "/api/meta"), refreshMe()]);
+  } catch (e) { view().innerHTML = `<p class="empty">Can't reach the server: ${esc(e.message)}</p>`; return; }
+  window.addEventListener("hashchange", router);
+  router();
+})();
+
+</script>
+</body>
+</html>
